@@ -48,8 +48,8 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 
     private int mImageThumbSize;
     private int mImageThumbSpacing;
-    private ImageAdapter mAdapter;
     private ImageFetcher mImageFetcher;
+    private ImageAdapter mAdapter;
 
     // /////////////////
     // Lifecycle methods
@@ -66,10 +66,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-
-        mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
-        mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
         SherlockFragmentActivity activity = getSherlockActivity();
         mAdapter = new ImageAdapter(activity);
@@ -77,10 +73,36 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         ImageCacheParams cacheParams = new ImageCacheParams(activity, IMAGE_CACHE_DIR);
         cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
 
+        mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
+        mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
+
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
         mImageFetcher = new ImageFetcher(activity, mImageThumbSize);
         mImageFetcher.setLoadingImage(R.drawable.empty_photo);
         mImageFetcher.addImageCache(activity.getSupportFragmentManager(), cacheParams);
+
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflator)
+    {
+        super.onCreateOptionsMenu(menu, inflator);
+
+        inflator.inflate(R.menu.main_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+        case R.id.clear_cache:
+            mImageFetcher.clearCache();
+            Toast.makeText(getSherlockActivity(), R.string.clear_cache_complete_toast, Toast.LENGTH_SHORT).show();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -160,12 +182,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         mImageFetcher.closeCache();
     }
 
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
-    {
-        inflater.inflate(R.menu.main_menu, menu);
-    }
-
     // /////////////////
     // UI Event handlers
     // /////////////////
@@ -185,17 +201,17 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             startActivity(i);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
+    // ////////////////
+    // Business methods
+    // ////////////////
+
+    public void searchForImages(String keyword)
     {
-        switch (item.getItemId())
-        {
-        case R.id.clear_cache:
-            mImageFetcher.clearCache();
-            Toast.makeText(getSherlockActivity(), R.string.clear_cache_complete_toast, Toast.LENGTH_SHORT).show();
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+        if (keyword == null)
+            throw new IllegalArgumentException("Keywork should not be null");
+        // TODO: Validate the input.
+        mAdapter.keyword = keyword;
+        mAdapter.notifyDataSetChanged();
     }
 
     // /////////////
@@ -211,6 +227,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         private int mItemHeight = 0;
         private int mNumColumns = 0;
         private GridView.LayoutParams mImageViewLayoutParams;
+        private String keyword = "";
 
         public ImageAdapter(Context context)
         {
@@ -222,6 +239,8 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         @Override
         public int getCount()
         {
+            if (keyword.length() < 1)
+                return 0;
             return Images.imageThumbUrls.length + mNumColumns;
         }
 
