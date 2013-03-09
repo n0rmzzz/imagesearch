@@ -15,8 +15,8 @@ import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
+import android.widget.ImageView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
@@ -30,7 +30,7 @@ import com.tinywebgears.imagesearch.util.ImageFetcher;
  * Simple fragment activity to hold the main {@link ImageDetailFragment}.
  */
 @ContentView(R.layout.image_detail_pager)
-public class ImageDetailActivity extends BaseActivity implements OnClickListener
+public class ImageDetailActivity extends BaseActivity implements ImageDetailFragment.Callbacks
 {
     private static final String TAG = "ImageDetailActivity";
     private static final String IMAGE_CACHE_DIR = "images";
@@ -56,7 +56,7 @@ public class ImageDetailActivity extends BaseActivity implements OnClickListener
         mActionBar.hide();
         setUpSystemUiVisibility();
 
-        loadImage();
+        setUpImageGrid();
     }
 
     @Override
@@ -81,9 +81,9 @@ public class ImageDetailActivity extends BaseActivity implements OnClickListener
         mImageFetcher.closeCache();
     }
 
-    // //////////////
-    // Event handlers
-    // //////////////
+    // /////////////////
+    // UI Event handlers
+    // /////////////////
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
@@ -105,8 +105,24 @@ public class ImageDetailActivity extends BaseActivity implements OnClickListener
         return mImageFetcher;
     }
 
+    // ////////////////
+    // Business methods
+    // ////////////////
+
+    /**
+     * Method from ImageDetailFragment.Callbacks
+     */
     @Override
-    public void onClick(View v)
+    public void loadImage(String imageUrl, ImageView imageView)
+    {
+        mImageFetcher.loadImage(imageUrl, imageView);
+    }
+
+    /**
+     * Method from ImageDetailFragment.Callbacks
+     */
+    @Override
+    public void onImageViewClick()
     {
         toggleSystemUiVisibility();
     }
@@ -115,9 +131,8 @@ public class ImageDetailActivity extends BaseActivity implements OnClickListener
     // Private methods
     // ///////////////
 
-    private void loadImage()
+    private void setUpImageGrid()
     {
-        // TODO: Refactor this part.
         final DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         final int height = displayMetrics.heightPixels;
@@ -177,9 +192,9 @@ public class ImageDetailActivity extends BaseActivity implements OnClickListener
         }
     }
 
-    // /////////////////
-    // Inner classes //
-    // /////////////////
+    // /////////////
+    // Inner classes
+    // /////////////
 
     /**
      * The main adapter that backs the ViewPager.

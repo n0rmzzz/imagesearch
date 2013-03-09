@@ -5,6 +5,7 @@
 
 package com.tinywebgears.imagesearch.view;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,7 +14,6 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.tinywebgears.imagesearch.Platform;
 import com.tinywebgears.imagesearch.R;
 import com.tinywebgears.imagesearch.util.ImageFetcher;
 import com.tinywebgears.imagesearch.util.ImageWorker;
@@ -21,19 +21,40 @@ import com.tinywebgears.imagesearch.util.ImageWorker;
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
  */
-public class ImageDetailFragment extends Fragment {
+public class ImageDetailFragment extends Fragment implements OnClickListener
+{
     private static final String IMAGE_DATA_EXTRA = "extra_image_data";
+
+    private static Callbacks sDummyCallbacks = new Callbacks()
+    {
+        public void loadImage(String imageUrl, ImageView imageView)
+        {
+        }
+
+        @Override
+        public void onImageViewClick()
+        {
+        }
+    };
+
     private String mImageUrl;
     private ImageView mImageView;
     private ImageFetcher mImageFetcher;
+    private Callbacks mCallbacks = sDummyCallbacks;
+
+    // /////////////////
+    // Lifecycle methods
+    // /////////////////
 
     /**
      * Factory method to generate a new instance of the fragment given an image number.
-     *
-     * @param imageUrl The image url to load
+     * 
+     * @param imageUrl
+     *            The image url to load
      * @return A new instance of ImageDetailFragment with imageNum extras
      */
-    public static ImageDetailFragment newInstance(String imageUrl) {
+    public static ImageDetailFragment newInstance(String imageUrl)
+    {
         final ImageDetailFragment f = new ImageDetailFragment();
 
         final Bundle args = new Bundle();
@@ -46,52 +67,84 @@ public class ImageDetailFragment extends Fragment {
     /**
      * Empty constructor as per the Fragment documentation
      */
-    public ImageDetailFragment() {}
+    public ImageDetailFragment()
+    {
+    }
 
-    /**
-     * Populate image using a url from extras, use the convenience factory method
-     * {@link ImageDetailFragment#newInstance(String)} to create this fragment.
-     */
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         mImageUrl = getArguments() != null ? getArguments().getString(IMAGE_DATA_EXTRA) : null;
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-            Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
+    {
         // Inflate and locate the main ImageView
         final View v = inflater.inflate(R.layout.image_detail_fragment, container, false);
         mImageView = (ImageView) v.findViewById(R.id.imageView);
+        // Pass clicks on the ImageView to the parent activity to handle
+        mImageView.setOnClickListener(this);
         return v;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
         super.onActivityCreated(savedInstanceState);
 
-        // Use the parent activity to load the image asynchronously into the ImageView (so a single
-        // cache can be used over all pages in the ViewPager
-        if (ImageDetailActivity.class.isInstance(getActivity())) {
-            // TODO: Fix this hack
-            mImageFetcher = ((ImageDetailActivity) getActivity()).getImageFetcher();
-            mImageFetcher.loadImage(mImageUrl, mImageView);
-        }
-
-        // Pass clicks on the ImageView to the parent activity to handle
-        if (OnClickListener.class.isInstance(getActivity()) && Platform.hasHoneycomb()) {
-            mImageView.setOnClickListener((OnClickListener) getActivity());
-        }
+        mCallbacks.loadImage(mImageUrl, mImageView);
     }
 
     @Override
-    public void onDestroy() {
+    public void onDestroy()
+    {
         super.onDestroy();
-        if (mImageView != null) {
+        if (mImageView != null)
+        {
             // Cancel any pending image work
             ImageWorker.cancelWork(mImageView);
             mImageView.setImageDrawable(null);
         }
+    }
+
+    @Override
+    public void onAttach(Activity activity)
+    {
+        super.onAttach(activity);
+
+        if (!(activity instanceof Callbacks))
+            throw new IllegalStateException("Activity must implement fragment's callbacks.");
+        mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public void onDetach()
+    {
+        super.onDetach();
+
+        mCallbacks = sDummyCallbacks;
+    }
+
+    // /////////////////
+    // UI Event handlers
+    // /////////////////
+
+    @Override
+    public void onClick(View v)
+    {
+        mCallbacks.onImageViewClick();
+    }
+
+    // /////////////
+    // Inner classes
+    // /////////////
+
+    public static interface Callbacks
+    {
+        void loadImage(String imageUrl, ImageView imageView);
+
+        void onImageViewClick();
     }
 }

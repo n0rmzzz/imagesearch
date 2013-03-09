@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
@@ -50,6 +51,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     private ImageAdapter mAdapter;
     private ImageFetcher mImageFetcher;
 
+    // /////////////////
+    // Lifecycle methods
+    // /////////////////
+
     /**
      * Empty constructor as per the Fragment documentation
      */
@@ -66,16 +71,16 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_spacing);
 
-        mAdapter = new ImageAdapter(getActivity());
+        SherlockFragmentActivity activity = getSherlockActivity();
+        mAdapter = new ImageAdapter(activity);
 
-        ImageCacheParams cacheParams = new ImageCacheParams(getActivity(), IMAGE_CACHE_DIR);
-
+        ImageCacheParams cacheParams = new ImageCacheParams(activity, IMAGE_CACHE_DIR);
         cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
 
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
-        mImageFetcher = new ImageFetcher(getActivity(), mImageThumbSize);
+        mImageFetcher = new ImageFetcher(activity, mImageThumbSize);
         mImageFetcher.setLoadingImage(R.drawable.empty_photo);
-        mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
+        mImageFetcher.addImageCache(activity.getSupportFragmentManager(), cacheParams);
     }
 
     @Override
@@ -92,13 +97,9 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             {
                 // Pause fetcher to ensure smoother scrolling when flinging
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING)
-                {
                     mImageFetcher.setPauseWork(true);
-                }
                 else
-                {
                     mImageFetcher.setPauseWork(false);
-                }
             }
 
             @Override
@@ -126,9 +127,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                         mAdapter.setNumColumns(numColumns);
                         mAdapter.setItemHeight(columnWidth);
                         if (BuildConfig.DEBUG)
-                        {
                             Log.d(TAG, "onCreateView - numColumns set to " + numColumns);
-                        }
                     }
                 }
             }
@@ -161,28 +160,29 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         mImageFetcher.closeCache();
     }
 
-    @TargetApi(16)
-    @Override
-    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
-    {
-        final Intent i = new Intent(getActivity(), ImageDetailActivity.class);
-        i.putExtra(ImageDetailActivity.EXTRA_IMAGE, (int) id);
-        if (Platform.hasJellyBean())
-        {
-            // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
-            // show plus the thumbnail image in GridView is cropped. so using
-            // makeScaleUpAnimation() instead.
-            ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
-            getActivity().startActivity(i, options.toBundle());
-        }
-        else
-            startActivity(i);
-    }
-
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater)
     {
         inflater.inflate(R.menu.main_menu, menu);
+    }
+
+    // /////////////////
+    // UI Event handlers
+    // /////////////////
+
+    @TargetApi(16)
+    @Override
+    public void onItemClick(AdapterView<?> parent, View v, int position, long id)
+    {
+        final Intent i = new Intent(getSherlockActivity(), ImageDetailActivity.class);
+        i.putExtra(ImageDetailActivity.EXTRA_IMAGE, (int) id);
+        if (Platform.hasJellyBean())
+        {
+            ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
+            getSherlockActivity().startActivity(i, options.toBundle());
+        }
+        else
+            startActivity(i);
     }
 
     @Override
@@ -192,20 +192,21 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         {
         case R.id.clear_cache:
             mImageFetcher.clearCache();
-            Toast.makeText(getActivity(), R.string.clear_cache_complete_toast, Toast.LENGTH_SHORT).show();
+            Toast.makeText(getSherlockActivity(), R.string.clear_cache_complete_toast, Toast.LENGTH_SHORT).show();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
+    // /////////////
+    // Inner classes
+    // /////////////
+
     /**
-     * The main adapter that backs the GridView. This is fairly standard except the number of columns in the GridView is
-     * used to create a fake top row of empty views as we use a transparent ActionBar and don't want the real top row of
-     * images to start off covered by it.
+     * The main adapter that backs the GridView.
      */
     private class ImageAdapter extends BaseAdapter
     {
-
         private final Context mContext;
         private int mItemHeight = 0;
         private int mNumColumns = 0;
