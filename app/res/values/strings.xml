@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Image Search Demo</string>
+    <string name="title_item_detail">Item Details</string>
+    <string name="description_search">Search</string>
+    <string name="description_create">Create</string>
+    <string name="description_remove">Remove</string>
+    <string name="text_item_created">New item created.</string>
+    <string name="text_item_removed">Item removed.</string>
+
+</resources>
