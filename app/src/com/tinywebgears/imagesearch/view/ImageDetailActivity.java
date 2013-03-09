@@ -1,5 +1,11 @@
+/**
+ * This code has highly borrowed from Google's sample code, BitmapFun.
+ * http://developer.android.com/training/displaying-bitmaps/index.html
+ */
+
 package com.tinywebgears.imagesearch.view;
 
+import roboguice.inject.ContentView;
 import android.annotation.TargetApi;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -11,99 +17,46 @@ import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
-import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
-import com.github.rtyley.android.sherlock.roboguice.activity.RoboSherlockFragmentActivity;
-import com.tinywebgears.imagesearch.BuildConfig;
+import com.tinywebgears.imagesearch.Platform;
 import com.tinywebgears.imagesearch.R;
 import com.tinywebgears.imagesearch.provider.Images;
 import com.tinywebgears.imagesearch.util.ImageCache;
 import com.tinywebgears.imagesearch.util.ImageFetcher;
-import com.tinywebgears.imagesearch.util.Utils;
 
-public class ImageDetailActivity extends RoboSherlockFragmentActivity implements OnClickListener
+/**
+ * Simple fragment activity to hold the main {@link ImageDetailFragment}.
+ */
+@ContentView(R.layout.image_detail_pager)
+public class ImageDetailActivity extends BaseActivity implements OnClickListener
 {
+    private static final String TAG = "ImageDetailActivity";
     private static final String IMAGE_CACHE_DIR = "images";
     public static final String EXTRA_IMAGE = "extra_image";
 
+    private ActionBar mActionBar;
     private ImagePagerAdapter mAdapter;
     private ImageFetcher mImageFetcher;
     private ViewPager mPager;
 
-    @TargetApi(14)
+    // /////////////////
+    // Lifecycle methods
+    // /////////////////
+
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
-        if (BuildConfig.DEBUG)
-        {
-            Utils.enableStrictMode();
-        }
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.image_detail_pager);
 
-        // Fetch screen height and width, to use as our max size when loading images as this
-        // activity runs full screen
-        final DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        final int height = displayMetrics.heightPixels;
-        final int width = displayMetrics.widthPixels;
-
-        // For this sample we'll use half of the longest width to resize our images. As the
-        // image scaling ensures the image is larger than this, we should be left with a
-        // resolution that is appropriate for both portrait and landscape. For best image quality
-        // we shouldn't divide by 2, but this will use more memory and require a larger memory
-        // cache.
-        final int longest = (height > width ? height : width) / 2;
-
-        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
-        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
-
-        // The ImageFetcher takes care of loading images into our ImageView children asynchronously
-        mImageFetcher = new ImageFetcher(this, longest);
-        mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
-        mImageFetcher.setImageFadeIn(false);
-
-        // Set up ViewPager and backing adapter
-        mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), Images.imageUrls.length);
-        mPager = (ViewPager) findViewById(R.id.pager);
-        mPager.setAdapter(mAdapter);
-        mPager.setPageMargin((int) getResources().getDimension(R.dimen.image_detail_pager_margin));
-        mPager.setOffscreenPageLimit(2);
-
-        // Set up activity to go full screen
         getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN);
+        mActionBar = getSupportActionBar();
+        mActionBar.setDisplayHomeAsUpEnabled(true);
+        mActionBar.hide();
+        setUpSystemUiVisibility();
 
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayHomeAsUpEnabled(true);
-        actionBar.hide();
-
-        // Enable some additional newer visibility and ActionBar features to create a more
-        // immersive photo viewing experience
-        if (Utils.hasHoneycomb())
-        {
-            // Hide and show the ActionBar as the visibility changes
-            mPager.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
-            {
-                @Override
-                public void onSystemUiVisibilityChange(int vis)
-                {
-                    if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0)
-                        actionBar.hide();
-                    else
-                        actionBar.show();
-                }
-            });
-            // Start low profile mode and hide ActionBar
-            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
-        }
-
-        // Set the current item based on the extra passed in to this activity
-        final int extraCurrentItem = getIntent().getIntExtra(EXTRA_IMAGE, -1);
-        if (extraCurrentItem != -1)
-            mPager.setCurrentItem(extraCurrentItem);
+        loadImage();
     }
 
     @Override
@@ -128,6 +81,10 @@ public class ImageDetailActivity extends RoboSherlockFragmentActivity implements
         mImageFetcher.closeCache();
     }
 
+    // //////////////
+    // Event handlers
+    // //////////////
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
@@ -136,19 +93,8 @@ public class ImageDetailActivity extends RoboSherlockFragmentActivity implements
         case android.R.id.home:
             NavUtils.navigateUpFromSameTask(this);
             return true;
-        case R.id.clear_cache:
-            mImageFetcher.clearCache();
-            Toast.makeText(this, R.string.clear_cache_complete_toast, Toast.LENGTH_SHORT).show();
-            return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        getSupportMenuInflater().inflate(R.menu.main_menu, menu);
-        return true;
     }
 
     /**
@@ -159,10 +105,84 @@ public class ImageDetailActivity extends RoboSherlockFragmentActivity implements
         return mImageFetcher;
     }
 
+    @Override
+    public void onClick(View v)
+    {
+        toggleSystemUiVisibility();
+    }
+
+    // ///////////////
+    // Private methods
+    // ///////////////
+
+    private void loadImage()
+    {
+        // TODO: Refactor this part.
+        final DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        final int height = displayMetrics.heightPixels;
+        final int width = displayMetrics.widthPixels;
+        final int longest = Math.max(height, width) / 2;
+
+        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
+        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
+
+        // The ImageFetcher takes care of loading images into our ImageView children asynchronously
+        mImageFetcher = new ImageFetcher(this, longest);
+        mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
+        mImageFetcher.setImageFadeIn(false);
+
+        // Set up ViewPager and backing adapter
+        mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), Images.imageUrls.length);
+        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager.setAdapter(mAdapter);
+        mPager.setPageMargin((int) getResources().getDimension(R.dimen.image_detail_pager_margin));
+        mPager.setOffscreenPageLimit(2);
+
+        // Set the current item based on the extra passed in to this activity
+        final int extraCurrentItem = getIntent().getIntExtra(EXTRA_IMAGE, -1);
+        if (extraCurrentItem != -1)
+            mPager.setCurrentItem(extraCurrentItem);
+    }
+
+    @TargetApi(14)
+    private void toggleSystemUiVisibility()
+    {
+        final int vis = mPager.getSystemUiVisibility();
+        if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0)
+            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+        else
+            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+    }
+
+    @TargetApi(14)
+    private void setUpSystemUiVisibility()
+    {
+        if (Platform.hasHoneycomb())
+        {
+            // Hide and show the ActionBar as the visibility changes
+            mPager.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
+            {
+                @Override
+                public void onSystemUiVisibilityChange(int vis)
+                {
+                    if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0)
+                        mActionBar.hide();
+                    else
+                        mActionBar.show();
+                }
+            });
+            // Start low profile mode and hide ActionBar
+            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+        }
+    }
+
+    // /////////////////
+    // Inner classes //
+    // /////////////////
+
     /**
-     * The main adapter that backs the ViewPager. A subclass of FragmentStatePagerAdapter as there could be a large
-     * number of items in the ViewPager and we don't want to retain them all in memory at once but create/destroy them
-     * on the fly.
+     * The main adapter that backs the ViewPager.
      */
     private class ImagePagerAdapter extends FragmentStatePagerAdapter
     {
@@ -185,20 +205,5 @@ public class ImageDetailActivity extends RoboSherlockFragmentActivity implements
         {
             return ImageDetailFragment.newInstance(Images.imageUrls[position]);
         }
-    }
-
-    /**
-     * Set on the ImageView in the ViewPager children fragments, to enable/disable low profile mode when the ImageView
-     * is touched.
-     */
-    @TargetApi(14)
-    @Override
-    public void onClick(View v)
-    {
-        final int vis = mPager.getSystemUiVisibility();
-        if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0)
-            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        else
-            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
     }
 }

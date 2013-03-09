@@ -1,3 +1,8 @@
+/**
+ * This code has highly borrowed from Google's sample code, BitmapFun.
+ * http://developer.android.com/training/displaying-bitmaps/index.html
+ */
+
 package com.tinywebgears.imagesearch.view;
 
 import android.os.Bundle;
@@ -8,10 +13,10 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.tinywebgears.imagesearch.Platform;
 import com.tinywebgears.imagesearch.R;
 import com.tinywebgears.imagesearch.util.ImageFetcher;
 import com.tinywebgears.imagesearch.util.ImageWorker;
-import com.tinywebgears.imagesearch.util.Utils;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
@@ -69,12 +74,13 @@ public class ImageDetailFragment extends Fragment {
         // Use the parent activity to load the image asynchronously into the ImageView (so a single
         // cache can be used over all pages in the ViewPager
         if (ImageDetailActivity.class.isInstance(getActivity())) {
+            // TODO: Fix this hack
             mImageFetcher = ((ImageDetailActivity) getActivity()).getImageFetcher();
             mImageFetcher.loadImage(mImageUrl, mImageView);
         }
 
         // Pass clicks on the ImageView to the parent activity to handle
-        if (OnClickListener.class.isInstance(getActivity()) && Utils.hasHoneycomb()) {
+        if (OnClickListener.class.isInstance(getActivity()) && Platform.hasHoneycomb()) {
             mImageView.setOnClickListener((OnClickListener) getActivity());
         }
     }

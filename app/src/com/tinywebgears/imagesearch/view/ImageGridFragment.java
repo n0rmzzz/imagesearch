@@ -1,3 +1,8 @@
+/**
+ * This code has highly borrowed from Google's sample code, BitmapFun.
+ * http://developer.android.com/training/displaying-bitmaps/index.html
+ */
+
 package com.tinywebgears.imagesearch.view;
 
 import android.annotation.TargetApi;
@@ -23,11 +28,11 @@ import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.tinywebgears.imagesearch.BuildConfig;
+import com.tinywebgears.imagesearch.Platform;
 import com.tinywebgears.imagesearch.R;
 import com.tinywebgears.imagesearch.provider.Images;
 import com.tinywebgears.imagesearch.util.ImageCache.ImageCacheParams;
 import com.tinywebgears.imagesearch.util.ImageFetcher;
-import com.tinywebgears.imagesearch.util.Utils;
 
 /**
  * The main fragment that powers the ImageGridActivity screen. Fairly straight forward GridView implementation with the
@@ -162,7 +167,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     {
         final Intent i = new Intent(getActivity(), ImageDetailActivity.class);
         i.putExtra(ImageDetailActivity.EXTRA_IMAGE, (int) id);
-        if (Utils.hasJellyBean())
+        if (Platform.hasJellyBean())
         {
             // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
             // show plus the thumbnail image in GridView is cropped. so using
