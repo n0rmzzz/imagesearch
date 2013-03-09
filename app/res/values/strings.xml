@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Image Search Demo</string>
-    <string name="title_item_detail">Item Details</string>
-    <string name="description_search">Search</string>
-    <string name="description_create">Create</string>
-    <string name="description_remove">Remove</string>
-    <string name="text_item_created">New item created.</string>
-    <string name="text_item_removed">Item removed.</string>
-
+    <string name="app_name">Image Search</string>
+    <string name="app_description">Simple Image Search Application</string>
+    <string name="clear_cache_menu">Clear Caches</string>
+    <string name="clear_cache_complete_toast">Caches have been cleared</string>
+    <string name="imageview_description">Image Thumbnail</string>
+    <string name="no_network_connection_toast">No network connection found</string>
+    
 </resources>

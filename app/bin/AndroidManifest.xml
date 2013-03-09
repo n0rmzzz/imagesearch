@@ -8,13 +8,25 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="17" />
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/Theme.Sherlock.Light.DarkActionBar" >
         <activity
-            android:name="com.tinywebgears.imagesearch.view.ItemListActivity"
+            android:name=".view.ImageDetailActivity"
+            android:label="@string/app_name"
+            android:parentActivityName=".view.ImageGridActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".view.ImageGridActivity" />
+        </activity>
+        <activity
+            android:name=".view.ImageGridActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,20 +34,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.tinywebgears.imagesearch.view.ItemDetailActivity"
-            android:label="@string/title_item_detail"
-            android:parentActivityName="com.tinywebgears.imagesearch.view.ItemListActivityivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".view.ItemListActivity" />
-        </activity>
-
-        <provider
-            android:name="com.tinywebgears.imagesearch.contentprovider.CommentsContentProvider"
-            android:authorities="com.tinywebgears.imagesearch.contentprovider"
-            android:exported="false" >
-        </provider>
     </application>
 
 </manifest>

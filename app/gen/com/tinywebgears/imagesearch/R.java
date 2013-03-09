@@ -685,10 +685,12 @@ containing a value of this type.
         public static final int abs__bright_foreground_inverse_holo_dark=0x7f060006;
         public static final int abs__bright_foreground_inverse_holo_light=0x7f060007;
         public static final int abs__holo_blue_light=0x7f060008;
-        public static final int abs__primary_text_disable_only_holo_dark=0x7f060009;
-        public static final int abs__primary_text_disable_only_holo_light=0x7f06000a;
-        public static final int abs__primary_text_holo_dark=0x7f06000b;
-        public static final int abs__primary_text_holo_light=0x7f06000c;
+        public static final int abs__primary_text_disable_only_holo_dark=0x7f06000b;
+        public static final int abs__primary_text_disable_only_holo_light=0x7f06000c;
+        public static final int abs__primary_text_holo_dark=0x7f06000d;
+        public static final int abs__primary_text_holo_light=0x7f06000e;
+        public static final int grid_state_focused=0x7f06000a;
+        public static final int grid_state_pressed=0x7f060009;
     }
     public static final class dimen {
         /**  Default height of an action bar. 
@@ -804,6 +806,9 @@ containing a value of this type.
  Minimum width for an action button in the menu area of an action bar 
          */
         public static final int action_button_min_width=0x7f070010;
+        public static final int image_detail_pager_margin=0x7f070013;
+        public static final int image_thumbnail_size=0x7f070011;
+        public static final int image_thumbnail_spacing=0x7f070012;
     }
     public static final class drawable {
         public static final int abs__ab_bottom_solid_dark_holo=0x7f020000;
@@ -917,10 +922,8 @@ containing a value of this type.
         public static final int abs__textfield_searchview_holo_light=0x7f02006c;
         public static final int abs__textfield_searchview_right_holo_dark=0x7f02006d;
         public static final int abs__textfield_searchview_right_holo_light=0x7f02006e;
-        public static final int ic_compose=0x7f02006f;
+        public static final int empty_photo=0x7f02006f;
         public static final int ic_launcher=0x7f020070;
-        public static final int ic_remove=0x7f020071;
-        public static final int ic_search=0x7f020072;
     }
     public static final class id {
         public static final int abs__action_bar=0x7f040022;
@@ -963,16 +966,15 @@ containing a value of this type.
         public static final int abs__title=0x7f04001b;
         public static final int abs__titleDivider=0x7f04001c;
         public static final int abs__up=0x7f04000b;
+        public static final int clear_cache=0x7f040036;
         public static final int disableHome=0x7f040009;
         public static final int edit_query=0x7f040027;
+        public static final int gridView=0x7f040035;
         public static final int homeAsUp=0x7f040006;
-        public static final int item_detail=0x7f040035;
-        public static final int item_detail_container=0x7f040033;
-        public static final int item_list=0x7f040034;
+        public static final int imageView=0x7f040033;
         public static final int listMode=0x7f040002;
-        public static final int menu_create=0x7f040037;
-        public static final int menu_remove=0x7f040036;
         public static final int normal=0x7f040001;
+        public static final int pager=0x7f040034;
         public static final int showCustom=0x7f040008;
         public static final int showHome=0x7f040005;
         public static final int showTitle=0x7f040007;
@@ -1007,32 +1009,14 @@ containing a value of this type.
         public static final int abs__search_dropdown_item_icons_2line=0x7f030014;
         public static final int abs__search_view=0x7f030015;
         public static final int abs__simple_dropdown_hint=0x7f030016;
-        public static final int activity_item_detail=0x7f030017;
-        /** 
-    Layout alias to replace the single-pane version of the layout with a
-    two-pane version on Large screens.
-
-    For more on layout aliases, see:
-    http://developer.android.com/training/multiscreen/screensizes.html#TaskUseAliasFilters
-    
-
-    Layout alias to replace the single-pane version of the layout with a
-    two-pane version on Large screens.
-
-    For more on layout aliases, see:
-    http://developer.android.com/training/multiscreen/screensizes.html#TaskUseAliasFilters
-    
-         */
-        public static final int activity_item_list=0x7f030018;
-        public static final int activity_item_twopane=0x7f030019;
-        public static final int activity_item_twopane_narrow=0x7f03001a;
-        public static final int fragment_item_detail=0x7f03001b;
-        public static final int sherlock_spinner_dropdown_item=0x7f03001c;
-        public static final int sherlock_spinner_item=0x7f03001d;
+        public static final int image_detail_fragment=0x7f030017;
+        public static final int image_detail_pager=0x7f030018;
+        public static final int image_grid_fragment=0x7f030019;
+        public static final int sherlock_spinner_dropdown_item=0x7f03001a;
+        public static final int sherlock_spinner_item=0x7f03001b;
     }
     public static final class menu {
-        public static final int item_details=0x7f0b0000;
-        public static final int item_list=0x7f0b0001;
+        public static final int main_menu=0x7f0b0000;
     }
     public static final class string {
         /**  Content description for the action bar "home" affordance. [CHAR LIMIT=NONE] 
@@ -1080,30 +1064,14 @@ containing a value of this type.
         /**  Description of a share target (both in the list of such or the default share button) in a ShareActionProvider (share UI). [CHAR LIMIT=NONE] 
          */
         public static final int abs__shareactionprovider_share_with_application=0x7f090009;
+        public static final int app_description=0x7f090010;
         public static final int app_name=0x7f09000f;
-        public static final int description_create=0x7f090012;
-        public static final int description_remove=0x7f090013;
-        public static final int description_search=0x7f090011;
-        public static final int text_item_created=0x7f090014;
-        public static final int text_item_removed=0x7f090015;
-        public static final int title_item_detail=0x7f090010;
+        public static final int clear_cache_complete_toast=0x7f090012;
+        public static final int clear_cache_menu=0x7f090011;
+        public static final int imageview_description=0x7f090013;
+        public static final int no_network_connection_toast=0x7f090014;
     }
     public static final class style {
-        /** 
-        Base application theme, dependent on API level. This theme is replaced
-        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
-    
-
-            Theme customizations available in newer API levels can go in
-            res/values-vXX/styles.xml, while customizations related to
-            backward-compatibility can go here.
-        
-         */
-        public static final int AppBaseTheme=0x7f0a0059;
-        /**  Application theme. 
- All customizations that are NOT specific to a particular API-level can go here. 
-         */
-        public static final int AppTheme=0x7f0a005a;
         public static final int DialogWindowTitle_Sherlock=0x7f0a0036;
         public static final int DialogWindowTitle_Sherlock_Light=0x7f0a0037;
         public static final int Sherlock___TextAppearance_Small=0x7f0a004a;
