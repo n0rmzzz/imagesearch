@@ -20,8 +20,8 @@ public class BaseActivity extends RoboSherlockFragmentActivity
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
-        enableStrictModeInDebug();
         super.onCreate(savedInstanceState);
+        enableStrictModeInDebug();
     }
 
     @TargetApi(11)

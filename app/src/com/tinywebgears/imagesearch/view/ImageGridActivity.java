@@ -5,6 +5,8 @@
 
 package com.tinywebgears.imagesearch.view;
 
+import javax.annotation.Nullable;
+
 import roboguice.inject.ContentView;
 import roboguice.inject.InjectFragment;
 import android.os.Bundle;
@@ -25,6 +27,7 @@ public class ImageGridActivity extends BaseActivity
     private static final String TAG = "ImageGridActivity";
     private static final String STATE_SEARCH_STRING = "state-search-string";
 
+    @Nullable
     @InjectFragment(R.id.image_grid)
     private Fragment mImageGridFragment;
 
@@ -92,8 +95,13 @@ public class ImageGridActivity extends BaseActivity
         searchForImages();
     }
 
+    // ////////////////
+    // Business methods
+    // ////////////////
+
     private void searchForImages()
     {
-        ((ImageGridFragment) mImageGridFragment).searchForImages(mSearchStr);
+        if (mImageGridFragment != null)
+            ((ImageGridFragment) mImageGridFragment).searchForImages(mSearchStr);
     }
 }
