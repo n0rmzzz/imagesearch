@@ -32,6 +32,7 @@ import com.tinywebgears.imagesearch.BuildConfig;
 import com.tinywebgears.imagesearch.Platform;
 import com.tinywebgears.imagesearch.R;
 import com.tinywebgears.imagesearch.provider.Images;
+import com.tinywebgears.imagesearch.task.GetImagesTask;
 import com.tinywebgears.imagesearch.util.ImageCache.ImageCacheParams;
 import com.tinywebgears.imagesearch.util.ImageFetcher;
 
@@ -210,6 +211,8 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         if (keyword == null)
             throw new IllegalArgumentException("Keywork should not be null");
         // TODO: Validate the input.
+        GetImagesTask task = new GetImagesTask();
+        task.execute();
         mAdapter.keyword = keyword;
         mAdapter.notifyDataSetChanged();
     }
