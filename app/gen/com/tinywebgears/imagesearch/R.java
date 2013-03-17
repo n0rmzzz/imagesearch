@@ -966,7 +966,8 @@ containing a value of this type.
         public static final int abs__title=0x7f04001b;
         public static final int abs__titleDivider=0x7f04001c;
         public static final int abs__up=0x7f04000b;
-        public static final int clear_cache=0x7f040037;
+        public static final int action_search=0x7f040037;
+        public static final int clear_cache=0x7f040038;
         public static final int disableHome=0x7f040009;
         public static final int edit_query=0x7f040027;
         public static final int gridView=0x7f040036;

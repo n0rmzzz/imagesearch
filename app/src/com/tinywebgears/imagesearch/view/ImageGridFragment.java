@@ -28,11 +28,12 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
+import com.actionbarsherlock.widget.SearchView;
+import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.tinywebgears.imagesearch.BuildConfig;
 import com.tinywebgears.imagesearch.Platform;
 import com.tinywebgears.imagesearch.R;
 import com.tinywebgears.imagesearch.provider.Images;
-import com.tinywebgears.imagesearch.task.GetImagesTask;
 import com.tinywebgears.imagesearch.util.ImageCache.ImageCacheParams;
 import com.tinywebgears.imagesearch.util.ImageFetcher;
 
@@ -51,6 +52,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     private int mImageThumbSpacing;
     private ImageFetcher mImageFetcher;
     private ImageAdapter mAdapter;
+    private String mSearchStr = "";
 
     // /////////////////
     // Lifecycle methods
@@ -61,6 +63,17 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
      */
     public ImageGridFragment()
     {
+    }
+
+    public String getSearchStr()
+    {
+        return mSearchStr;
+    }
+
+    public void setSearchStr(String searchStr)
+    {
+        mSearchStr = searchStr;
+        ;
     }
 
     @Override
@@ -91,6 +104,27 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         super.onCreateOptionsMenu(menu, inflator);
 
         inflator.inflate(R.menu.main_menu, menu);
+
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        searchView.setOnQueryTextListener(new OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String query)
+            {
+                if (mSearchStr != query && !mSearchStr.equals(query))
+                {
+                    mSearchStr = query;
+                    searchForImages();
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText)
+            {
+                return false;
+            }
+        });
     }
 
     @Override
@@ -206,15 +240,17 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     // Business methods
     // ////////////////
 
-    public void searchForImages(String keyword)
+    public void searchForImages()
     {
-        if (keyword == null)
-            throw new IllegalArgumentException("Keywork should not be null");
-        // TODO: Validate the input.
-        GetImagesTask task = new GetImagesTask();
-        task.execute();
-        mAdapter.keyword = keyword;
+        if (mSearchStr == null)
+            throw new IllegalArgumentException("Keywork should not be null.");
+        mAdapter.keyword = mSearchStr;
         mAdapter.notifyDataSetChanged();
+        if (mSearchStr.length() < 1)
+            return;
+        // TODO: Validate the input.
+        // GetImagesTask task = new GetImagesTask();
+        // task.execute();
     }
 
     // /////////////

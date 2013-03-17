@@ -12,10 +12,6 @@ import roboguice.inject.InjectFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
-import com.actionbarsherlock.widget.SearchView;
-import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
 import com.tinywebgears.imagesearch.R;
 
 /**
@@ -31,8 +27,6 @@ public class ImageGridActivity extends BaseActivity
     @InjectFragment(R.id.image_grid)
     private Fragment mImageGridFragment;
 
-    private String mSearchStr = "";
-
     // /////////////////
     // Lifecycle methods
     // /////////////////
@@ -44,64 +38,18 @@ public class ImageGridActivity extends BaseActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        super.onCreateOptionsMenu(menu);
-
-        SearchView searchView = new SearchView(this);
-        MenuItem searchItem = menu.add("Search").setIcon(R.drawable.abs__ic_search).setActionView(searchView);
-        searchItem.setShowAsAction(MenuItem.SHOW_AS_ACTION_IF_ROOM | MenuItem.SHOW_AS_ACTION_COLLAPSE_ACTION_VIEW);
-        searchView.setOnQueryTextListener(new OnQueryTextListener()
-        {
-            @Override
-            public boolean onQueryTextSubmit(String query)
-            {
-                if (mSearchStr != query && !mSearchStr.equals(query))
-                {
-                    mSearchStr = query;
-                    searchForImages();
-                }
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String newText)
-            {
-                return false;
-            }
-        });
-
-        return true;
-    }
-
-    @Override
     protected void onSaveInstanceState(Bundle outState)
     {
         super.onSaveInstanceState(outState);
-        outState.putString(STATE_SEARCH_STRING, mSearchStr);
+        // TODO: Protect NULL
+        outState.putString(STATE_SEARCH_STRING, ((ImageGridFragment) mImageGridFragment).getSearchStr());
     }
 
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState)
     {
         super.onRestoreInstanceState(savedInstanceState);
-        mSearchStr = savedInstanceState.getString(STATE_SEARCH_STRING);
-    }
-
-    @Override
-    protected void onResume()
-    {
-        super.onResume();
-        searchForImages();
-    }
-
-    // ////////////////
-    // Business methods
-    // ////////////////
-
-    private void searchForImages()
-    {
-        if (mImageGridFragment != null)
-            ((ImageGridFragment) mImageGridFragment).searchForImages(mSearchStr);
+        // TODO: Protect NULL
+        ((ImageGridFragment) mImageGridFragment).setSearchStr(savedInstanceState.getString(STATE_SEARCH_STRING));
     }
 }

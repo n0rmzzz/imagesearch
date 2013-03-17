@@ -2,6 +2,8 @@
 
 <resources>
     <style name="Sherlock.__Theme" parent="android:Theme.Holo">
+		<item name="textColorPrimary">@color/abs__primary_text_holo_light</item>
+	    <item name="textColorPrimaryInverse">@color/abs__primary_text_holo_dark</item>
     </style>
     <style name="Sherlock.__Theme.Light" parent="android:Theme.Holo.Light">
     </style>
