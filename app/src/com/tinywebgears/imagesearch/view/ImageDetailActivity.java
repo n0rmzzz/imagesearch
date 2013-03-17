@@ -176,6 +176,7 @@ public class ImageDetailActivity extends BaseActivity implements ImageDetailFrag
         if (Platform.hasHoneycomb())
         {
             // Hide and show the ActionBar as the visibility changes
+            // TODO: Protect NULL
             mPager.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
             {
                 @Override
