@@ -54,9 +54,8 @@ public class ImageDetailActivity extends BaseActivity implements ImageDetailFrag
         mActionBar = getSupportActionBar();
         mActionBar.setDisplayHomeAsUpEnabled(true);
         mActionBar.hide();
-        setUpSystemUiVisibility();
-
         setUpImageGrid();
+        setUpSystemUiVisibility();
     }
 
     @Override
@@ -176,20 +175,22 @@ public class ImageDetailActivity extends BaseActivity implements ImageDetailFrag
         if (Platform.hasHoneycomb())
         {
             // Hide and show the ActionBar as the visibility changes
-            // TODO: Protect NULL
-            mPager.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
+            if (mPager != null)
             {
-                @Override
-                public void onSystemUiVisibilityChange(int vis)
+                mPager.setOnSystemUiVisibilityChangeListener(new View.OnSystemUiVisibilityChangeListener()
                 {
-                    if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0)
-                        mActionBar.hide();
-                    else
-                        mActionBar.show();
-                }
-            });
-            // Start low profile mode and hide ActionBar
-            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+                    @Override
+                    public void onSystemUiVisibilityChange(int vis)
+                    {
+                        if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0)
+                            mActionBar.hide();
+                        else
+                            mActionBar.show();
+                    }
+                });
+                // Start low profile mode and hide ActionBar
+                mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+            }
         }
     }
 

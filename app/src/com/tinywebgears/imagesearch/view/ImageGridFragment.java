@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
@@ -74,7 +75,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     public void setSearchStr(String searchStr)
     {
         mSearchStr = searchStr;
-        ;
     }
 
     @Override
@@ -106,12 +106,15 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 
         inflator.inflate(R.menu.main_menu, menu);
 
-        SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
+        final SearchView searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
         searchView.setOnQueryTextListener(new OnQueryTextListener()
         {
             @Override
             public boolean onQueryTextSubmit(String query)
             {
+                InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
+                        Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                 if (mSearchStr != query && !mSearchStr.equals(query))
                 {
                     mSearchStr = query;
