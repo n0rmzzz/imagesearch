@@ -145,7 +145,7 @@ public class ImageDetailActivity extends BaseActivity implements ImageDetailFrag
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
         mImageFetcher = new ImageFetcher(this, longest);
         mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
-        mImageFetcher.setImageFadeIn(false);
+        mImageFetcher.setImageFadeIn(true);
 
         // Set up ViewPager and backing adapter
         mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), Images.imageUrls.length);

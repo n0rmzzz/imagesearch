@@ -34,6 +34,7 @@ import com.tinywebgears.imagesearch.BuildConfig;
 import com.tinywebgears.imagesearch.Platform;
 import com.tinywebgears.imagesearch.R;
 import com.tinywebgears.imagesearch.provider.Images;
+import com.tinywebgears.imagesearch.task.GetImagesTask;
 import com.tinywebgears.imagesearch.util.ImageCache.ImageCacheParams;
 import com.tinywebgears.imagesearch.util.ImageFetcher;
 
@@ -244,13 +245,17 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     {
         if (mSearchStr == null)
             throw new IllegalArgumentException("Keywork should not be null.");
-        mAdapter.keyword = mSearchStr;
-        mAdapter.notifyDataSetChanged();
         if (mSearchStr.length() < 1)
             return;
         // TODO: Validate the input.
-        // GetImagesTask task = new GetImagesTask();
-        // task.execute();
+        GetImagesTask task = new GetImagesTask(this);
+        task.execute(mSearchStr);
+    }
+
+    // TODO: FIXME: Implement this properly.
+    public void processGetImageTaskResult()
+    {
+        mAdapter.notifyDataSetChanged();
     }
 
     // /////////////
@@ -266,7 +271,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         private int mItemHeight = 0;
         private int mNumColumns = 0;
         private GridView.LayoutParams mImageViewLayoutParams;
-        private String keyword = "";
 
         public ImageAdapter(Context context)
         {
@@ -278,8 +282,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         @Override
         public int getCount()
         {
-            if (keyword.length() < 1)
-                return 0;
             return Images.imageThumbUrls.length + mNumColumns;
         }
 
