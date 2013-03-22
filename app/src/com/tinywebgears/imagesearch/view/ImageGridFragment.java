@@ -45,7 +45,8 @@ import com.tinywebgears.imagesearch.util.ImageFetcher;
  * and caching thumbnails for quick retrieval. The cache is retained over configuration changes like orientation change
  * so the images are populated quickly if, for example, the user rotates the device.
  */
-public class ImageGridFragment extends SherlockFragment implements AdapterView.OnItemClickListener
+public class ImageGridFragment extends SherlockFragment implements AdapterView.OnItemClickListener,
+        GetImagesTask.Callbacks
 {
     private static final String TAG = "ImageGridFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
@@ -251,12 +252,12 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         if (mSearchStr.length() < 1)
             return;
         // TODO: Validate the input.
-        GetImagesTask task = new GetImagesTask(this);
+        GetImagesTask task = new GetImagesTask(getActivity(), this);
         task.execute(mSearchStr);
     }
 
-    // TODO: FIXME: Implement this properly.
-    public void processGetImageTaskResult()
+    @Override
+    public void onImagesReade()
     {
         mAdapter.notifyDataSetChanged();
     }

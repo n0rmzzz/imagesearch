@@ -21,7 +21,23 @@ public class BaseActivity extends RoboSherlockFragmentActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        // enableStrictModeInDebug();
+        enableStrictModeInDebug();
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState)
+    {
+        super.onSaveInstanceState(outState);
+
+        ((CustomApplication) getApplication()).detach(this);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState)
+    {
+        super.onRestoreInstanceState(savedInstanceState);
+
+        ((CustomApplication) getApplication()).attach(this);
     }
 
     @TargetApi(11)
