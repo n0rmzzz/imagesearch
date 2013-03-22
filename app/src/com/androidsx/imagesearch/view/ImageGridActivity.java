@@ -3,7 +3,7 @@
  * http://developer.android.com/training/displaying-bitmaps/index.html
  */
 
-package com.tinywebgears.imagesearch.view;
+package com.androidsx.imagesearch.view;
 
 import javax.annotation.Nullable;
 
@@ -13,9 +13,9 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
-import com.tinywebgears.imagesearch.R;
-import com.tinywebgears.imagesearch.task.GetImagesTask;
-import com.tinywebgears.imagesearch.task.GetImagesTask.Callbacks;
+import com.androidsx.imagesearch.R;
+import com.androidsx.imagesearch.task.GetImagesTask;
+import com.androidsx.imagesearch.task.GetImagesTask.Callbacks;
 
 /**
  * Simple fragment activity to hold the main {@link ImageGridFragment}.

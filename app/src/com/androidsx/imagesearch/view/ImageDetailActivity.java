@@ -3,7 +3,7 @@
  * http://developer.android.com/training/displaying-bitmaps/index.html
  */
 
-package com.tinywebgears.imagesearch.view;
+package com.androidsx.imagesearch.view;
 
 import roboguice.inject.ContentView;
 import android.annotation.TargetApi;
@@ -20,11 +20,11 @@ import android.widget.ImageView;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.view.MenuItem;
-import com.tinywebgears.imagesearch.Platform;
-import com.tinywebgears.imagesearch.R;
-import com.tinywebgears.imagesearch.provider.Images;
-import com.tinywebgears.imagesearch.util.ImageCache;
-import com.tinywebgears.imagesearch.util.ImageFetcher;
+import com.androidsx.imagesearch.Platform;
+import com.androidsx.imagesearch.R;
+import com.androidsx.imagesearch.provider.Images;
+import com.androidsx.imagesearch.util.ImageCache;
+import com.androidsx.imagesearch.util.ImageFetcher;
 
 /**
  * Simple fragment activity to hold the main {@link ImageDetailFragment}.

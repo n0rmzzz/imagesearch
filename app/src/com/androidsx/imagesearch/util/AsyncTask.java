@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tinywebgears.imagesearch.util;
+package com.androidsx.imagesearch.util;
 
 import java.util.ArrayDeque;
 import java.util.concurrent.BlockingQueue;
@@ -37,7 +37,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Process;
 
-import com.tinywebgears.imagesearch.Platform;
+import com.androidsx.imagesearch.Platform;
 
 /**
  * *************************************

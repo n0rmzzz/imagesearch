@@ -1,4 +1,4 @@
-package com.tinywebgears.imagesearch;
+package com.androidsx.imagesearch;
 
 import android.os.Build;
 

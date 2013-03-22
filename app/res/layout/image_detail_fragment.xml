@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
-    <com.tinywebgears.imagesearch.view.RecyclingImageView
+    <com.androidsx.imagesearch.view.RecyclingImageView
         android:id="@+id/imageView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"

@@ -3,7 +3,7 @@
  * http://developer.android.com/training/displaying-bitmaps/index.html
  */
 
-package com.tinywebgears.imagesearch.view;
+package com.androidsx.imagesearch.view;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -11,7 +11,7 @@ import android.graphics.drawable.LayerDrawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-import com.tinywebgears.imagesearch.util.RecyclingBitmapDrawable;
+import com.androidsx.imagesearch.util.RecyclingBitmapDrawable;
 
 /**
  * Sub-class of ImageView which automatically notifies the drawable when it is being displayed.

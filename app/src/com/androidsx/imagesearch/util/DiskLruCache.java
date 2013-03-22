@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tinywebgears.imagesearch.util;
+package com.androidsx.imagesearch.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedWriter;

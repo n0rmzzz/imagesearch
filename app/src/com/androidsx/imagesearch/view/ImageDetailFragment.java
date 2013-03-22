@@ -3,7 +3,7 @@
  * http://developer.android.com/training/displaying-bitmaps/index.html
  */
 
-package com.tinywebgears.imagesearch.view;
+package com.androidsx.imagesearch.view;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -14,9 +14,9 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.tinywebgears.imagesearch.R;
-import com.tinywebgears.imagesearch.util.ImageFetcher;
-import com.tinywebgears.imagesearch.util.ImageWorker;
+import com.androidsx.imagesearch.R;
+import com.androidsx.imagesearch.util.ImageFetcher;
+import com.androidsx.imagesearch.util.ImageWorker;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.

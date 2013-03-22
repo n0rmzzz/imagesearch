@@ -1,4 +1,4 @@
-package com.tinywebgears.imagesearch.provider;
+package com.androidsx.imagesearch.provider;
 
 /**
  * A static list used to mimick a content provider.

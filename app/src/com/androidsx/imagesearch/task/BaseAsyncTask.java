@@ -1,10 +1,10 @@
-package com.tinywebgears.imagesearch.task;
+package com.androidsx.imagesearch.task;
 
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.tinywebgears.imagesearch.view.CustomApplication;
+import com.androidsx.imagesearch.view.CustomApplication;
 
 public abstract class BaseAsyncTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result>
 {

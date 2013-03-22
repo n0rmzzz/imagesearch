@@ -1,4 +1,4 @@
-package com.tinywebgears.imagesearch.view;
+package com.androidsx.imagesearch.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import android.app.Activity;
 import android.app.Application;
 
-import com.tinywebgears.imagesearch.task.BaseAsyncTask;
+import com.androidsx.imagesearch.task.BaseAsyncTask;
 
 public class CustomApplication extends Application
 {

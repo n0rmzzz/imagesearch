@@ -3,7 +3,7 @@
  * http://developer.android.com/training/displaying-bitmaps/index.html
  */
 
-package com.tinywebgears.imagesearch.view;
+package com.androidsx.imagesearch.view;
 
 import android.annotation.TargetApi;
 import android.app.ActivityOptions;
@@ -31,13 +31,13 @@ import com.actionbarsherlock.view.MenuInflater;
 import com.actionbarsherlock.view.MenuItem;
 import com.actionbarsherlock.widget.SearchView;
 import com.actionbarsherlock.widget.SearchView.OnQueryTextListener;
-import com.tinywebgears.imagesearch.BuildConfig;
-import com.tinywebgears.imagesearch.Platform;
-import com.tinywebgears.imagesearch.R;
-import com.tinywebgears.imagesearch.provider.Images;
-import com.tinywebgears.imagesearch.task.GetImagesTask;
-import com.tinywebgears.imagesearch.util.ImageCache.ImageCacheParams;
-import com.tinywebgears.imagesearch.util.ImageFetcher;
+import com.androidsx.imagesearch.BuildConfig;
+import com.androidsx.imagesearch.Platform;
+import com.androidsx.imagesearch.R;
+import com.androidsx.imagesearch.provider.Images;
+import com.androidsx.imagesearch.task.GetImagesTask;
+import com.androidsx.imagesearch.util.ImageCache.ImageCacheParams;
+import com.androidsx.imagesearch.util.ImageFetcher;
 
 /**
  * The main fragment that powers the ImageGridActivity screen. Fairly straight forward GridView implementation with the

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tinywebgears.imagesearch.util;
+package com.androidsx.imagesearch.util;
 
 import java.io.FileDescriptor;
 
@@ -26,8 +26,8 @@ import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.util.Log;
 
-import com.tinywebgears.imagesearch.BuildConfig;
-import com.tinywebgears.imagesearch.Platform;
+import com.androidsx.imagesearch.BuildConfig;
+import com.androidsx.imagesearch.Platform;
 
 /**
  * A simple subclass of {@link ImageWorker} that resizes images from resources given a target width

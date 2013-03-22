@@ -1,4 +1,4 @@
-package com.tinywebgears.imagesearch.view;
+package com.androidsx.imagesearch.view;
 
 import java.util.Arrays;
 import java.util.List;
@@ -8,8 +8,8 @@ import android.os.Bundle;
 import android.os.StrictMode;
 
 import com.github.rtyley.android.sherlock.roboguice.activity.RoboSherlockFragmentActivity;
-import com.tinywebgears.imagesearch.BuildConfig;
-import com.tinywebgears.imagesearch.Platform;
+import com.androidsx.imagesearch.BuildConfig;
+import com.androidsx.imagesearch.Platform;
 
 public class BaseActivity extends RoboSherlockFragmentActivity
 {

@@ -1,7 +1,8 @@
-package com.tinywebgears.imagesearch.task;
+package com.androidsx.imagesearch.task;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -18,8 +19,8 @@ import android.app.Activity;
 import android.util.Log;
 import android.util.Pair;
 
-import com.tinywebgears.imagesearch.provider.Images;
-import com.tinywebgears.imagesearch.view.ImageGridFragment;
+import com.androidsx.imagesearch.provider.Images;
+import com.androidsx.imagesearch.view.ImageGridFragment;
 
 public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String, String>>>
 {
@@ -91,7 +92,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
                     }
                     catch (Exception ee)
                     {
-                        Log.w(TAG, "Error getting information about next page.", ee);
+                        Log.w(TAG, "Error getting information about next page: " + ee.getMessage(), ee);
                     }
                 }
                 else
@@ -104,8 +105,8 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
         }
         catch (Exception e)
         {
-            Log.w(TAG, "Error occurred while getting images.", e);
-            return null;
+            Log.w(TAG, "Error occurred while getting images: " + e.getMessage(), e);
+            return Collections.EMPTY_LIST;
         }
     }
 

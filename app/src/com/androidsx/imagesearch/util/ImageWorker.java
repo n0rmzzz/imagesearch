@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tinywebgears.imagesearch.util;
+package com.androidsx.imagesearch.util;
 
 import java.lang.ref.WeakReference;
 
@@ -31,8 +31,8 @@ import android.support.v4.app.FragmentManager;
 import android.util.Log;
 import android.widget.ImageView;
 
-import com.tinywebgears.imagesearch.BuildConfig;
-import com.tinywebgears.imagesearch.Platform;
+import com.androidsx.imagesearch.BuildConfig;
+import com.androidsx.imagesearch.Platform;
 
 /**
  * This class wraps up completing some arbitrary long running work when loading a bitmap to an

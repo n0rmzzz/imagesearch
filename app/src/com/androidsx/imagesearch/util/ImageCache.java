@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tinywebgears.imagesearch.util;
+package com.androidsx.imagesearch.util;
 
 import java.io.File;
 import java.io.FileDescriptor;
@@ -42,8 +42,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 
-import com.tinywebgears.imagesearch.BuildConfig;
-import com.tinywebgears.imagesearch.Platform;
+import com.androidsx.imagesearch.BuildConfig;
+import com.androidsx.imagesearch.Platform;
 
 /**
  * This class handles disk and memory caching of bitmaps in conjunction with the

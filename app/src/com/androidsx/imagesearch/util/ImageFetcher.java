@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.tinywebgears.imagesearch.util;
+package com.androidsx.imagesearch.util;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -34,8 +34,8 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.tinywebgears.imagesearch.BuildConfig;
-import com.tinywebgears.imagesearch.R;
+import com.androidsx.imagesearch.BuildConfig;
+import com.androidsx.imagesearch.R;
 
 /**
  * A simple subclass of {@link ImageResizer} that fetches and resizes images fetched from a URL.
