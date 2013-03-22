@@ -162,17 +162,20 @@ public class ImageDetailActivity extends BaseActivity implements ImageDetailFrag
     @TargetApi(14)
     private void toggleSystemUiVisibility()
     {
-        final int vis = mPager.getSystemUiVisibility();
-        if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0)
-            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
-        else
-            mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+        if (Platform.hasIceCreamSandwich())
+        {
+            final int vis = mPager.getSystemUiVisibility();
+            if ((vis & View.SYSTEM_UI_FLAG_LOW_PROFILE) != 0)
+                mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_VISIBLE);
+            else
+                mPager.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LOW_PROFILE);
+        }
     }
 
     @TargetApi(14)
     private void setUpSystemUiVisibility()
     {
-        if (Platform.hasHoneycomb())
+        if (Platform.hasIceCreamSandwich())
         {
             // Hide and show the ActionBar as the visibility changes
             if (mPager != null)
