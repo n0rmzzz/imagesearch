@@ -93,6 +93,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
                     catch (Exception ee)
                     {
                         Log.w(TAG, "Error getting information about next page: " + ee.getMessage(), ee);
+                        break;
                     }
                 }
                 else
@@ -106,7 +107,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
         catch (Exception e)
         {
             Log.w(TAG, "Error occurred while getting images: " + e.getMessage(), e);
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
     }
 
@@ -124,11 +125,11 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
         Images.imageThumbUrls = thumbnailUrls.toArray(Images.imageThumbUrls);
         Images.imageUrls = imageUrls.toArray(Images.imageThumbUrls);
 
-        ((Callbacks) mActivity).onImagesReade();
+        ((Callbacks) mActivity).onImagesReade(result.size() > 0);
     }
 
     public static interface Callbacks
     {
-        void onImagesReade();
+        void onImagesReade(boolean result);
     }
 }

@@ -57,10 +57,10 @@ public class ImageGridActivity extends BaseActivity implements GetImagesTask.Cal
     }
 
     @Override
-    public void onImagesReade()
+    public void onImagesReade(boolean result)
     {
         Log.d(TAG, "Images are ready.");
         if (mImageGridFragment != null)
-            ((Callbacks) mImageGridFragment).onImagesReade();
+            ((Callbacks) mImageGridFragment).onImagesReade(result);
     }
 }

@@ -251,15 +251,19 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             throw new IllegalArgumentException("Keywork should not be null.");
         if (mSearchStr.length() < 1)
             return;
+        Toast.makeText(getActivity(), "Please wait...", Toast.LENGTH_SHORT).show();
         // TODO: Validate the input.
         GetImagesTask task = new GetImagesTask(getActivity(), this);
         task.execute(mSearchStr);
     }
 
     @Override
-    public void onImagesReade()
+    public void onImagesReade(boolean result)
     {
-        mAdapter.notifyDataSetChanged();
+        if (result)
+            mAdapter.notifyDataSetChanged();
+        else
+            Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_LONG).show();
     }
 
     // /////////////
