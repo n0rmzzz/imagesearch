@@ -53,7 +53,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
             List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
             for (int queriesCount = 0; queriesCount < sMaxQueriesPerRequest && result.size() < sMaxItesmPerRequest; queriesCount++)
             {
-                String encodedKeyword = URLEncoder.encode(keyword, "utf-8");
+                String encodedKeyword = URLEncoder.encode(createQueryKeyword(keyword), "utf-8");
                 String urlString = urlPrefix + "?key=" + apiKey + "&cx=" + searchEngineId + "&q=" + encodedKeyword
                         + "&start=" + startIndex;
                 StringBuilder portURL = new StringBuilder(urlString);
@@ -126,6 +126,11 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
         Images.imageUrls = imageUrls.toArray(Images.imageThumbUrls);
 
         ((Callbacks) mActivity).onImagesReade(result.size() > 0);
+    }
+
+    protected String createQueryKeyword(String keyword)
+    {
+        return "\"" + keyword + "\"";
     }
 
     public static interface Callbacks

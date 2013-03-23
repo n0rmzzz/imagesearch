@@ -36,6 +36,7 @@ import com.androidsx.imagesearch.Platform;
 import com.androidsx.imagesearch.R;
 import com.androidsx.imagesearch.provider.Images;
 import com.androidsx.imagesearch.task.GetImagesTask;
+import com.androidsx.imagesearch.task.GetMemesTask;
 import com.androidsx.imagesearch.util.ImageCache.ImageCacheParams;
 import com.androidsx.imagesearch.util.ImageFetcher;
 
@@ -252,8 +253,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         if (mSearchStr.length() < 1)
             return;
         Toast.makeText(getActivity(), "Please wait...", Toast.LENGTH_SHORT).show();
-        // TODO: Validate the input.
-        GetImagesTask task = new GetImagesTask(getActivity(), this);
+        GetImagesTask task = new GetMemesTask(getActivity(), this);
         task.execute(mSearchStr);
     }
 
