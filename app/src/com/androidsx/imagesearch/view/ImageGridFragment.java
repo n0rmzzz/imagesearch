@@ -171,7 +171,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             {
                 Cursor c = (Cursor) mSuggestionsAdapter.getItem(position);
                 String query = c.getString(c.getColumnIndex(SearchManager.SUGGEST_COLUMN_TEXT_1));
-                searchView.setQuery(query, false);
+                searchView.setQuery(query, true);
                 return true;
             }
         });
