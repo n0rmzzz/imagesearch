@@ -26,7 +26,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
 {
     private static final String TAG = "GetImgesTask";
 
-    private static final int sMaxItesmPerRequest = 16;
+    private static final int sMaxItesmPerRequest = 12;
     private static final int sMaxQueriesPerRequest = 4;
 
     private HttpClient client = new DefaultHttpClient();
@@ -125,7 +125,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
         Images.imageThumbUrls = thumbnailUrls.toArray(Images.imageThumbUrls);
         Images.imageUrls = imageUrls.toArray(Images.imageThumbUrls);
 
-        ((Callbacks) mActivity).onImagesReade(result.size() > 0);
+        ((Callbacks) mActivity).onImagesReady(result.size() > 0);
     }
 
     protected String createQueryKeyword(String keyword)
@@ -135,6 +135,6 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
 
     public static interface Callbacks
     {
-        void onImagesReade(boolean result);
+        void onImagesReady(boolean result);
     }
 }

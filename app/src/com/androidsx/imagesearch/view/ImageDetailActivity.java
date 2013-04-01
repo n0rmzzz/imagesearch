@@ -147,7 +147,7 @@ public class ImageDetailActivity extends BaseActivity implements ImageDetailFrag
         mImageFetcher.setImageFadeIn(true);
 
         // Set up ViewPager and backing adapter
-        mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), Images.imageUrls.length);
+        mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), Images.getCount());
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(mAdapter);
         mPager.setPageMargin((int) getResources().getDimension(R.dimen.image_detail_pager_margin));

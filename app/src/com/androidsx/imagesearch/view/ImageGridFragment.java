@@ -173,6 +173,8 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
+                searchView.setIconified(true);
+                searchView.setIconified(true);
                 if (mSearchStr != query && !mSearchStr.equals(query))
                 {
                     mSearchStr = query;
@@ -324,13 +326,13 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             throw new IllegalArgumentException("Keywork should not be null.");
         if (mSearchStr.length() < 1)
             return;
-        Toast.makeText(getActivity(), "Please wait...", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getActivity(), "Please wait...", Toast.LENGTH_LONG).show();
         GetImagesTask task = new GetMemesTask(getActivity(), this);
         task.execute(mSearchStr);
     }
 
     @Override
-    public void onImagesReade(boolean result)
+    public void onImagesReady(boolean result)
     {
         if (result)
             mAdapter.notifyDataSetChanged();
@@ -362,19 +364,23 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         @Override
         public int getCount()
         {
-            return Images.imageThumbUrls.length + mNumColumns;
+            if (mNumColumns < 2)
+                Images.setCount(Images.imageThumbUrls.length);
+            else
+                Images.setCount(Images.imageThumbUrls.length / mNumColumns * mNumColumns);
+            return Images.getCount();
         }
 
         @Override
         public Object getItem(int position)
         {
-            return position < mNumColumns ? null : Images.imageThumbUrls[position - mNumColumns];
+            return Images.imageThumbUrls[position];
         }
 
         @Override
         public long getItemId(int position)
         {
-            return position < mNumColumns ? 0 : position - mNumColumns;
+            return position;
         }
 
         @Override
@@ -386,7 +392,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         @Override
         public int getItemViewType(int position)
         {
-            return (position < mNumColumns) ? 1 : 0;
+            return 0;
         }
 
         @Override
@@ -398,14 +404,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         @Override
         public View getView(int position, View convertView, ViewGroup container)
         {
-            // First check if this is the top row
-            if (position < mNumColumns)
-            {
-                if (convertView == null)
-                    convertView = new View(mContext);
-                return convertView;
-            }
-
             // Now handle the main ImageView thumbnails
             ImageView imageView;
             if (convertView == null)
@@ -424,7 +422,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 
             // Finally load the image asynchronously into the ImageView, this also takes care of
             // setting a placeholder image while the background thread runs
-            mImageFetcher.loadImage(Images.imageThumbUrls[position - mNumColumns], imageView);
+            mImageFetcher.loadImage(Images.imageThumbUrls[position], imageView);
             return imageView;
         }
 
