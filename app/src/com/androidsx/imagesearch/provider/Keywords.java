@@ -19,7 +19,8 @@ public class Keywords
         List<String> result = new ArrayList<String>();
         for (String keyword : keywords)
         {
-            if (keyword.startsWith(prefix))
+            // TODO: Locale
+            if (keyword.toLowerCase().startsWith(prefix.toLowerCase()))
                 result.add(keyword);
         }
         return result;
