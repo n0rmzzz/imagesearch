@@ -31,6 +31,7 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +64,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 {
     private static final String TAG = "ImageGridFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
+    private static final String TAG_PROGRESS = "progress";
 
     private SearchView searchView;
     private int mImageThumbSize;
@@ -368,18 +370,22 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 Images.setCount(Images.imageThumbUrls.length);
             else
                 Images.setCount(Images.imageThumbUrls.length / mNumColumns * mNumColumns);
-            return Images.getCount();
+            return Images.getCount() + 1;
         }
 
         @Override
         public Object getItem(int position)
         {
+            if (position == getCount() - 1)
+                return null;
             return Images.imageThumbUrls[position];
         }
 
         @Override
         public long getItemId(int position)
         {
+            if (position == getCount() - 1)
+                return 0;
             return position;
         }
 
@@ -392,6 +398,8 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         @Override
         public int getItemViewType(int position)
         {
+            if (position == getCount() - 1)
+                return 1;
             return 0;
         }
 
@@ -404,6 +412,14 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         @Override
         public View getView(int position, View convertView, ViewGroup container)
         {
+            if (position == getCount() - 1)
+            {
+                LinearLayout item = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.image_grid_footer,
+                        null);
+                item.setTag(TAG_PROGRESS);
+                return item;
+            }
+
             // Now handle the main ImageView thumbnails
             ImageView imageView;
             if (convertView == null)
