@@ -64,7 +64,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 {
     private static final String TAG = "ImageGridFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
-    private static final String TAG_PROGRESS = "progress";
 
     private SearchView searchView;
     private int mImageThumbSize;
@@ -370,7 +369,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 Images.setCount(Images.imageThumbUrls.length);
             else
                 Images.setCount(Images.imageThumbUrls.length / mNumColumns * mNumColumns);
-            return Images.getCount() + 1;
+            return (Images.getCount() == 0) ? 0 : Images.getCount() + 1;
         }
 
         @Override
@@ -416,7 +415,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             {
                 LinearLayout item = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.image_grid_footer,
                         null);
-                item.setTag(TAG_PROGRESS);
                 return item;
             }
 
