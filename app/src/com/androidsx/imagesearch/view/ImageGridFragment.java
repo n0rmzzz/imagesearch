@@ -46,6 +46,7 @@ import com.androidsx.imagesearch.BuildConfig;
 import com.androidsx.imagesearch.Platform;
 import com.androidsx.imagesearch.R;
 import com.androidsx.imagesearch.provider.Images;
+import com.androidsx.imagesearch.provider.Keywords;
 import com.androidsx.imagesearch.task.GetImagesTask;
 import com.androidsx.imagesearch.task.GetMemesTask;
 import com.androidsx.imagesearch.util.ImageCache.ImageCacheParams;
@@ -69,8 +70,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     private ImageFetcher mImageFetcher;
     private ImageAdapter mAdapter;
     private String mSearchStr = "";
-
-    private static final String[] COLUMNS = { BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1, };
 
     private SuggestionsAdapter mSuggestionsAdapter;
 
@@ -125,15 +124,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         inflator.inflate(R.menu.main_menu, menu);
 
         searchView = (SearchView) menu.findItem(R.id.action_search).getActionView();
-        if (mSuggestionsAdapter == null)
-        {
-            MatrixCursor cursor = new MatrixCursor(COLUMNS);
-            cursor.addRow(new String[] { "1", "Cool" });
-            cursor.addRow(new String[] { "2", "Great" });
-            cursor.addRow(new String[] { "3", "Awesome" });
-            mSuggestionsAdapter = new SuggestionsAdapter(((SherlockFragmentActivity) getActivity())
-                    .getSupportActionBar().getThemedContext(), cursor);
-        }
         SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
         if (searchManager != null)
         {
@@ -146,7 +136,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             }
             searchView.setSearchableInfo(info);
         }
-        searchView.setSuggestionsAdapter(mSuggestionsAdapter);
+        updateSuggestionsAdapter(null);
         searchView.setOnQueryTextFocusChangeListener(new OnFocusChangeListener()
         {
             @Override
@@ -194,6 +184,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             @Override
             public boolean onQueryTextChange(String newText)
             {
+                updateSuggestionsAdapter(newText);
                 return true;
             }
         });
@@ -287,6 +278,21 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     {
         super.onDestroy();
         mImageFetcher.closeCache();
+    }
+
+    private void updateSuggestionsAdapter(String prefix)
+    {
+        String[] columns = { BaseColumns._ID, SearchManager.SUGGEST_COLUMN_TEXT_1, };
+        MatrixCursor cursor = new MatrixCursor(columns);
+        int index = 1;
+        for (String keyword : Keywords.getKeywords(prefix))
+            cursor.addRow(new String[] { Integer.toString(index++), keyword });
+        if (mSuggestionsAdapter == null)
+            mSuggestionsAdapter = new SuggestionsAdapter(((SherlockFragmentActivity) getActivity())
+                    .getSupportActionBar().getThemedContext(), cursor);
+        else
+            mSuggestionsAdapter.swapCursor(cursor);
+        searchView.setSuggestionsAdapter(mSuggestionsAdapter);
     }
 
     // /////////////////
