@@ -26,7 +26,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
 {
     private static final String TAG = "GetImgesTask";
 
-    private static final int sMaxItesmPerRequest = 12;
+    private static final int sMinItesmPerRequest = 8;
     private static final int sMaxQueriesPerRequest = 4;
 
     private HttpClient client = new DefaultHttpClient();
@@ -51,7 +51,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
         try
         {
             List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
-            for (int queriesCount = 0; queriesCount < sMaxQueriesPerRequest && result.size() < sMaxItesmPerRequest; queriesCount++)
+            for (int queriesCount = 0; queriesCount < sMaxQueriesPerRequest && result.size() < sMinItesmPerRequest; queriesCount++)
             {
                 String encodedKeyword = URLEncoder.encode(createQueryKeyword(keyword), "utf-8");
                 String urlString = urlPrefix + "?key=" + apiKey + "&cx=" + searchEngineId + "&q=" + encodedKeyword

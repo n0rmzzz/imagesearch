@@ -46,6 +46,7 @@ import com.actionbarsherlock.widget.SearchView.OnSuggestionListener;
 import com.androidsx.imagesearch.BuildConfig;
 import com.androidsx.imagesearch.Platform;
 import com.androidsx.imagesearch.R;
+import com.androidsx.imagesearch.component.InfiniteGridView;
 import com.androidsx.imagesearch.provider.Images;
 import com.androidsx.imagesearch.provider.Keywords;
 import com.androidsx.imagesearch.task.GetImagesTask;
@@ -64,6 +65,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 {
     private static final String TAG = "ImageGridFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
+    private static final String GRID_VIEW_IS_LOADING = "com.androidsx.imagesearch.ImageGridFragment.IS_LOADING";
 
     private SearchView searchView;
     private int mImageThumbSize;
@@ -71,8 +73,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     private ImageFetcher mImageFetcher;
     private ImageAdapter mAdapter;
     private String mSearchStr = "";
-
     private SuggestionsAdapter mSuggestionsAdapter;
+    private GridView mGridView;
+    private LinearLayout mFooter;
+    private InfiniteGridView mInfiniteGridView;
 
     // /////////////////
     // Lifecycle methods
@@ -179,6 +183,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 if (mSearchStr != query && !mSearchStr.equals(query))
                 {
                     mSearchStr = query;
+                    mInfiniteGridView.hideRefreshView();
                     searchForImages();
                 }
                 return true;
@@ -210,10 +215,40 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         final View v = inflater.inflate(R.layout.image_grid_fragment, container, false);
-        final GridView mGridView = (GridView) v.findViewById(R.id.gridView);
+        mFooter = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.image_grid_footer, null);
+        mGridView = (GridView) v.findViewById(R.id.gridView);
+        mInfiniteGridView = new InfiniteGridView(mGridView, mFooter, new InfiniteGridView.Callbacks()
+        {
+            @Override
+            public void onNearTheEnd()
+            {
+                Log.d(TAG, "Must fetch new images now.");
+                // TODO: Fetch images, once finished fetching call
+                // mInfiniteGridView.hideRefreshView();
+            }
+
+            @Override
+            public boolean isNearEnd(int firstVisibleItem, int visibleItemCount, int totalItemCount)
+            {
+                if (mAdapter.getLastVisibleRow(firstVisibleItem, visibleItemCount) + 1 > mAdapter
+                        .getTotalRows(totalItemCount))
+                    return true;
+                return false;
+            }
+        });
+        if (savedInstanceState != null)
+        {
+            boolean isLoading = savedInstanceState.getBoolean(GRID_VIEW_IS_LOADING);
+            if (isLoading)
+            {
+                mInfiniteGridView.showRefreshView();
+                // TODO: Continue with the image fetching task.
+            }
+        }
+
         mGridView.setAdapter(mAdapter);
         mGridView.setOnItemClickListener(this);
-        mGridView.setOnScrollListener(new AbsListView.OnScrollListener()
+        mInfiniteGridView.setScrollListener(new AbsListView.OnScrollListener()
         {
             @Override
             public void onScrollStateChanged(AbsListView absListView, int scrollState)
@@ -228,6 +263,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount)
             {
+                Log.d(TAG, "No need to do anything on scroll.");
             }
         });
 
@@ -296,6 +332,21 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         else
             mSuggestionsAdapter.swapCursor(cursor);
         searchView.setSuggestionsAdapter(mSuggestionsAdapter);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState)
+    {
+        super.onActivityCreated(savedInstanceState);
+        Log.i(TAG, "onActivityCreated(): " + (savedInstanceState != null ? "NOT NULL" : "NULL"));
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle bundle)
+    {
+        super.onSaveInstanceState(bundle);
+        Log.i(TAG, "onSaveInstanceState()");
+        bundle.putBoolean(GRID_VIEW_IS_LOADING, mInfiniteGridView.isLoading().get());
     }
 
     // /////////////////
@@ -413,9 +464,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         {
             if (position == getCount() - 1)
             {
-                LinearLayout item = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.image_grid_footer,
-                        null);
-                return item;
+                // LinearLayout item = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.image_grid_footer,
+                // null);
+                // return item;
+                return mFooter;
             }
 
             // Now handle the main ImageView thumbnails
@@ -463,6 +515,17 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         public int getNumColumns()
         {
             return mNumColumns;
+        }
+
+        public int getTotalRows(int totalItemCount)
+        {
+            return mNumColumns == 0 ? totalItemCount : totalItemCount / mNumColumns;
+        }
+
+        public int getLastVisibleRow(int firstVisibleItem, int visibleItemCount)
+        {
+            int lastVisibleItem = firstVisibleItem + visibleItemCount;
+            return mNumColumns == 0 ? lastVisibleItem : lastVisibleItem / mNumColumns;
         }
     }
 
