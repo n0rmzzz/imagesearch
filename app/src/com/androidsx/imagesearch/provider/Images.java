@@ -1,5 +1,8 @@
 package com.androidsx.imagesearch.provider;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A static list used to mimic a content provider.
  */
@@ -13,9 +16,9 @@ public class Images
 
     public static int getCount()
     {
-        assert imageUrls.length == imageThumbUrls.length;
+        assert imageUrls.size() == imageThumbUrls.size();
         if (count < 1)
-            return imageUrls.length;
+            return imageUrls.size();
         return count;
     }
 
@@ -24,7 +27,7 @@ public class Images
         Images.count = count;
     }
 
-    public static String[] imageUrls = new String[] {};
+    public static List<String> imageUrls = new ArrayList<String>();
 
-    public static String[] imageThumbUrls = new String[] {};
+    public static List<String> imageThumbUrls = new ArrayList<String>();
 }

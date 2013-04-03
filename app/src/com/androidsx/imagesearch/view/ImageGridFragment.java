@@ -5,6 +5,7 @@
 
 package com.androidsx.imagesearch.view;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.annotation.TargetApi;
@@ -23,14 +24,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.ViewTreeObserver;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -46,7 +44,6 @@ import com.actionbarsherlock.widget.SearchView.OnSuggestionListener;
 import com.androidsx.imagesearch.BuildConfig;
 import com.androidsx.imagesearch.Platform;
 import com.androidsx.imagesearch.R;
-import com.androidsx.imagesearch.component.InfiniteGridView;
 import com.androidsx.imagesearch.provider.Images;
 import com.androidsx.imagesearch.provider.Keywords;
 import com.androidsx.imagesearch.task.GetImagesTask;
@@ -77,6 +74,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     private GridView mGridView;
     private LinearLayout mFooter;
     private InfiniteGridView mInfiniteGridView;
+    private int mSearchQueryIndex = 1;
 
     // /////////////////
     // Lifecycle methods
@@ -105,7 +103,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         super.onCreate(savedInstanceState);
 
         SherlockFragmentActivity activity = getSherlockActivity();
-        mAdapter = new ImageAdapter(activity);
 
         ImageCacheParams cacheParams = new ImageCacheParams(activity, IMAGE_CACHE_DIR);
         cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
@@ -117,6 +114,9 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         mImageFetcher = new ImageFetcher(activity, mImageThumbSize);
         mImageFetcher.setLoadingImage(R.drawable.empty_photo);
         mImageFetcher.addImageCache(activity.getSupportFragmentManager(), cacheParams);
+
+        mFooter = (LinearLayout) LayoutInflater.from(activity).inflate(R.layout.image_grid_footer, null);
+        mAdapter = new ImageAdapter(activity, mFooter, mImageFetcher);
 
         setHasOptionsMenu(true);
     }
@@ -183,8 +183,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 if (mSearchStr != query && !mSearchStr.equals(query))
                 {
                     mSearchStr = query;
-                    mInfiniteGridView.hideRefreshView();
-                    searchForImages();
+                    searchForImages(true);
                 }
                 return true;
             }
@@ -215,7 +214,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         final View v = inflater.inflate(R.layout.image_grid_fragment, container, false);
-        mFooter = (LinearLayout) LayoutInflater.from(getActivity()).inflate(R.layout.image_grid_footer, null);
         mGridView = (GridView) v.findViewById(R.id.gridView);
         mInfiniteGridView = new InfiniteGridView(mGridView, mFooter, new InfiniteGridView.Callbacks()
         {
@@ -223,27 +221,30 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             public void onNearTheEnd()
             {
                 Log.d(TAG, "Must fetch new images now.");
-                // TODO: Fetch images, once finished fetching call
-                // mInfiniteGridView.hideRefreshView();
+                searchForImages(false);
             }
 
             @Override
             public boolean isNearEnd(int firstVisibleItem, int visibleItemCount, int totalItemCount)
             {
+                // Scrolling doesn't make sense if the user hasn't performed a search at all.
+                if (mSearchStr.length() < 1)
+                    return false;
                 if (mAdapter.getLastVisibleRow(firstVisibleItem, visibleItemCount) + 1 > mAdapter
                         .getTotalRows(totalItemCount))
                     return true;
                 return false;
             }
         });
+        mInfiniteGridView.hideRefreshView();
         if (savedInstanceState != null)
         {
+            // TODO: Retrieve mSearchStr
             boolean isLoading = savedInstanceState.getBoolean(GRID_VIEW_IS_LOADING);
             if (isLoading)
-            {
                 mInfiniteGridView.showRefreshView();
-                // TODO: Continue with the image fetching task.
-            }
+            else
+                mInfiniteGridView.hideRefreshView();
         }
 
         mGridView.setAdapter(mAdapter);
@@ -346,6 +347,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     {
         super.onSaveInstanceState(bundle);
         Log.i(TAG, "onSaveInstanceState()");
+        // TODO: Save mSearchStr
         bundle.putBoolean(GRID_VIEW_IS_LOADING, mInfiniteGridView.isLoading().get());
     }
 
@@ -372,162 +374,38 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     // Business methods
     // ////////////////
 
-    public void searchForImages()
+    public void searchForImages(boolean fresh)
     {
-        if (mSearchStr == null)
-            throw new IllegalArgumentException("Keywork should not be null.");
+        assert (mSearchStr == null);
         if (mSearchStr.length() < 1)
             return;
-        Toast.makeText(getActivity(), "Please wait...", Toast.LENGTH_LONG).show();
-        GetImagesTask task = new GetMemesTask(getActivity(), this);
+        if (fresh)
+        {
+            Images.imageThumbUrls = new ArrayList<String>();
+            Images.imageUrls = new ArrayList<String>();
+        }
+        mInfiniteGridView.showRefreshView();
+        mAdapter.notifyDataSetChanged();
+        GetImagesTask task = new GetMemesTask(getActivity(), this, mSearchQueryIndex, fresh);
         task.execute(mSearchStr);
     }
 
     @Override
-    public void onImagesReady(boolean result)
+    public void onImagesReady(int count)
     {
-        if (result)
+        if (count > 0)
+        {
+            mSearchQueryIndex += count;
             mAdapter.notifyDataSetChanged();
+            mInfiniteGridView.hideRefreshView();
+        }
         else
-            Toast.makeText(getActivity(), "Failed!", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), R.string.query_failed, Toast.LENGTH_LONG).show();
     }
 
     // /////////////
     // Inner classes
     // /////////////
-
-    /**
-     * The main adapter that backs the GridView.
-     */
-    private class ImageAdapter extends BaseAdapter
-    {
-        private final Context mContext;
-        private int mItemHeight = 0;
-        private int mNumColumns = 0;
-        private GridView.LayoutParams mImageViewLayoutParams;
-
-        public ImageAdapter(Context context)
-        {
-            super();
-            mContext = context;
-            mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        }
-
-        @Override
-        public int getCount()
-        {
-            if (mNumColumns < 2)
-                Images.setCount(Images.imageThumbUrls.length);
-            else
-                Images.setCount(Images.imageThumbUrls.length / mNumColumns * mNumColumns);
-            return (Images.getCount() == 0) ? 0 : Images.getCount() + 1;
-        }
-
-        @Override
-        public Object getItem(int position)
-        {
-            if (position == getCount() - 1)
-                return null;
-            return Images.imageThumbUrls[position];
-        }
-
-        @Override
-        public long getItemId(int position)
-        {
-            if (position == getCount() - 1)
-                return 0;
-            return position;
-        }
-
-        @Override
-        public int getViewTypeCount()
-        {
-            return 2;
-        }
-
-        @Override
-        public int getItemViewType(int position)
-        {
-            if (position == getCount() - 1)
-                return 1;
-            return 0;
-        }
-
-        @Override
-        public boolean hasStableIds()
-        {
-            return true;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup container)
-        {
-            if (position == getCount() - 1)
-            {
-                // LinearLayout item = (LinearLayout) LayoutInflater.from(mContext).inflate(R.layout.image_grid_footer,
-                // null);
-                // return item;
-                return mFooter;
-            }
-
-            // Now handle the main ImageView thumbnails
-            ImageView imageView;
-            if (convertView == null)
-            {
-                // if it's not recycled, instantiate and initialize
-                imageView = new RecyclingImageView(mContext);
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setLayoutParams(mImageViewLayoutParams);
-            }
-            else
-                imageView = (ImageView) convertView;
-
-            // Check the height matches our calculated column width
-            if (imageView.getLayoutParams().height != mItemHeight)
-                imageView.setLayoutParams(mImageViewLayoutParams);
-
-            // Finally load the image asynchronously into the ImageView, this also takes care of
-            // setting a placeholder image while the background thread runs
-            mImageFetcher.loadImage(Images.imageThumbUrls[position], imageView);
-            return imageView;
-        }
-
-        /**
-         * Sets the item height. Useful for when we know the column width so the height can be set to match.
-         * 
-         * @param height
-         */
-        public void setItemHeight(int height)
-        {
-            if (height == mItemHeight)
-                return;
-            mItemHeight = height;
-            mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, mItemHeight);
-            mImageFetcher.setImageSize(height);
-            notifyDataSetChanged();
-        }
-
-        public void setNumColumns(int numColumns)
-        {
-            mNumColumns = numColumns;
-        }
-
-        public int getNumColumns()
-        {
-            return mNumColumns;
-        }
-
-        public int getTotalRows(int totalItemCount)
-        {
-            return mNumColumns == 0 ? totalItemCount : totalItemCount / mNumColumns;
-        }
-
-        public int getLastVisibleRow(int firstVisibleItem, int visibleItemCount)
-        {
-            int lastVisibleItem = firstVisibleItem + visibleItemCount;
-            return mNumColumns == 0 ? lastVisibleItem : lastVisibleItem / mNumColumns;
-        }
-    }
 
     /**
      * Search view suggestion adapter.

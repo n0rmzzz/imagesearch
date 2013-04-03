@@ -6,9 +6,9 @@ import com.androidsx.imagesearch.view.ImageGridFragment;
 
 public class GetMemesTask extends GetImagesTask
 {
-    public GetMemesTask(Activity activity, ImageGridFragment imageGridFragment)
+    public GetMemesTask(Activity activity, ImageGridFragment imageGridFragment, int startingIndex, boolean fresh)
     {
-        super(activity, imageGridFragment);
+        super(activity, imageGridFragment, startingIndex, fresh);
     }
 
     @Override

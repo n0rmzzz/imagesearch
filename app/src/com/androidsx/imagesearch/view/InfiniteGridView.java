@@ -1,4 +1,4 @@
-package com.androidsx.imagesearch.component;
+package com.androidsx.imagesearch.view;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 

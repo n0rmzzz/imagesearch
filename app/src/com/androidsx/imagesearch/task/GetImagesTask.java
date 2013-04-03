@@ -26,14 +26,18 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
 {
     private static final String TAG = "GetImgesTask";
 
-    private static final int sMinItesmPerRequest = 8;
+    private static final int sMinItesmPerRequest = 24;
     private static final int sMaxQueriesPerRequest = 4;
 
+    private int mStartingIndex;
+    private boolean mFresh;
     private HttpClient client = new DefaultHttpClient();
 
-    public GetImagesTask(Activity activity, ImageGridFragment imageGridFragment)
+    public GetImagesTask(Activity activity, ImageGridFragment imageGridFragment, int startingIndex, boolean fresh)
     {
         super(activity, Callbacks.class);
+        mStartingIndex = startingIndex;
+        mFresh = fresh;
     }
 
     @Override
@@ -47,7 +51,6 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
         String apiKey = "AIzaSyDtqxkys3TWrfw4kFwbvfEZUVzUGwQLeeY";
         // String apiKey = "AIzaSyB9nLGzeOiMnpGqsBYiCD5cWr_OCRM_JNc";
         String urlPrefix = "https://www.googleapis.com/customsearch/v1";
-        int startIndex = 1;
         try
         {
             List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
@@ -55,7 +58,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
             {
                 String encodedKeyword = URLEncoder.encode(createQueryKeyword(keyword), "utf-8");
                 String urlString = urlPrefix + "?key=" + apiKey + "&cx=" + searchEngineId + "&q=" + encodedKeyword
-                        + "&start=" + startIndex;
+                        + "&start=" + mStartingIndex;
                 StringBuilder portURL = new StringBuilder(urlString);
                 HttpGet get = new HttpGet(portURL.toString());
                 HttpResponse r = client.execute(get);
@@ -87,7 +90,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
                     }
                     try
                     {
-                        startIndex = (Integer) ((JSONObject) ((JSONArray) jsonObject.getJSONObject("queries").get(
+                        mStartingIndex = (Integer) ((JSONObject) ((JSONArray) jsonObject.getJSONObject("queries").get(
                                 "nextPage")).get(0)).get("startIndex");
                     }
                     catch (Exception ee)
@@ -122,10 +125,18 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
             thumbnailUrls.add(entry.first);
             imageUrls.add(entry.second);
         }
-        Images.imageThumbUrls = thumbnailUrls.toArray(Images.imageThumbUrls);
-        Images.imageUrls = imageUrls.toArray(Images.imageThumbUrls);
+        if (mFresh)
+        {
+            Images.imageThumbUrls = new ArrayList<String>(thumbnailUrls);
+            Images.imageUrls = new ArrayList<String>(imageUrls);
+        }
+        else
+        {
+            Images.imageThumbUrls.addAll(thumbnailUrls);
+            Images.imageUrls.addAll(imageUrls);
+        }
 
-        ((Callbacks) mActivity).onImagesReady(result.size() > 0);
+        ((Callbacks) mActivity).onImagesReady(result.size());
     }
 
     protected String createQueryKeyword(String keyword)
@@ -135,6 +146,6 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
 
     public static interface Callbacks
     {
-        void onImagesReady(boolean result);
+        void onImagesReady(int count);
     }
 }

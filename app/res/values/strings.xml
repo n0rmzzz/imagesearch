@@ -9,5 +9,6 @@
     <string name="no_network_connection_toast">No network connection found</string>
     <string name="search_hint">Search Memes</string>
     <string name="image_grid_loading">Loading...</string>
+    <string name="query_failed">Query failed! Please try again, or contact us if the problem persists.</string>
     
 </resources>

@@ -14,6 +14,7 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.view.WindowManager.LayoutParams;
 import android.widget.ImageView;
@@ -223,7 +224,8 @@ public class ImageDetailActivity extends BaseActivity implements ImageDetailFrag
         @Override
         public Fragment getItem(int position)
         {
-            return ImageDetailFragment.newInstance(Images.imageUrls[position]);
+            Log.d(TAG, "Fetching item in position " + position + ".");
+            return ImageDetailFragment.newInstance(Images.imageUrls.get(position));
         }
     }
 }
