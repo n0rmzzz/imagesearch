@@ -2,7 +2,6 @@ package com.androidsx.imagesearch.task;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -20,28 +19,28 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.androidsx.imagesearch.provider.Images;
-import com.androidsx.imagesearch.view.ImageGridFragment;
+import com.androidsx.imagesearch.task.GetImagesTask.GetImagesTaskResult;
 
-public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String, String>>>
+public class GetImagesTask extends BaseAsyncTask<String, Void, GetImagesTaskResult>
 {
     private static final String TAG = "GetImgesTask";
 
-    private static final int sMinItesmPerRequest = 24;
+    private static final int sMinItesmPerRequest = 16;
     private static final int sMaxQueriesPerRequest = 4;
 
-    private int mStartingIndex;
-    private boolean mFresh;
-    private HttpClient client = new DefaultHttpClient();
+    private final int mStartIndex;
+    private final boolean mFresh;
+    private final HttpClient client = new DefaultHttpClient();
 
-    public GetImagesTask(Activity activity, ImageGridFragment imageGridFragment, int startingIndex, boolean fresh)
+    public GetImagesTask(Activity activity, int startIndex, boolean fresh)
     {
         super(activity, Callbacks.class);
-        mStartingIndex = startingIndex;
+        mStartIndex = startIndex;
         mFresh = fresh;
     }
 
     @Override
-    protected List<Pair<String, String>> doInBackground(String... params)
+    protected GetImagesTaskResult doInBackground(String... params)
     {
         Log.w(TAG, "Task execution params: " + params);
         assert params.length >= 1;
@@ -53,12 +52,13 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
         String urlPrefix = "https://www.googleapis.com/customsearch/v1";
         try
         {
-            List<Pair<String, String>> result = new ArrayList<Pair<String, String>>();
-            for (int queriesCount = 0; queriesCount < sMaxQueriesPerRequest && result.size() < sMinItesmPerRequest; queriesCount++)
+            List<Pair<String, String>> urls = new ArrayList<Pair<String, String>>();
+            int nextStartIndex = mStartIndex;
+            for (int queriesCount = 0; queriesCount < sMaxQueriesPerRequest && urls.size() < sMinItesmPerRequest; queriesCount++)
             {
                 String encodedKeyword = URLEncoder.encode(createQueryKeyword(keyword), "utf-8");
                 String urlString = urlPrefix + "?key=" + apiKey + "&cx=" + searchEngineId + "&q=" + encodedKeyword
-                        + "&start=" + mStartingIndex;
+                        + "&start=" + nextStartIndex;
                 StringBuilder portURL = new StringBuilder(urlString);
                 HttpGet get = new HttpGet(portURL.toString());
                 HttpResponse r = client.execute(get);
@@ -86,16 +86,18 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
                                 thumbnailUrl = imageUrl;
                         }
                         if (thumbnailUrl != null && imageUrl != null)
-                            result.add(new Pair<String, String>(thumbnailUrl, imageUrl));
+                            urls.add(new Pair<String, String>(thumbnailUrl, imageUrl));
                     }
                     try
                     {
-                        mStartingIndex = (Integer) ((JSONObject) ((JSONArray) jsonObject.getJSONObject("queries").get(
+                        nextStartIndex = (Integer) ((JSONObject) ((JSONArray) jsonObject.getJSONObject("queries").get(
                                 "nextPage")).get(0)).get("startIndex");
                     }
                     catch (Exception ee)
                     {
                         Log.w(TAG, "Error getting information about next page: " + ee.getMessage(), ee);
+                        // Falling back to manual calculation.
+                        nextStartIndex += items.length();
                         break;
                     }
                 }
@@ -105,22 +107,22 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
                     break;
                 }
             }
-            return result;
+            return new GetImagesTaskResult(nextStartIndex, urls);
         }
         catch (Exception e)
         {
             Log.w(TAG, "Error occurred while getting images: " + e.getMessage(), e);
-            return Collections.emptyList();
+            return new GetImagesTaskResult(mStartIndex, new ArrayList<Pair<String, String>>());
         }
     }
 
     @Override
-    protected void onPostExecuteCallback(List<Pair<String, String>> result)
+    protected void onPostExecuteCallback(GetImagesTaskResult result)
     {
         Log.w(TAG, "Task execution result: " + result);
         List<String> thumbnailUrls = new ArrayList<String>();
         List<String> imageUrls = new ArrayList<String>();
-        for (Pair<String, String> entry : result)
+        for (Pair<String, String> entry : result.mUrls)
         {
             thumbnailUrls.add(entry.first);
             imageUrls.add(entry.second);
@@ -136,7 +138,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
             Images.imageUrls.addAll(imageUrls);
         }
 
-        ((Callbacks) mActivity).onImagesReady(result.size());
+        ((Callbacks) mActivity).onImagesReady(result.mUrls.size(), result.mNextStartIndex);
     }
 
     protected String createQueryKeyword(String keyword)
@@ -146,6 +148,33 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, List<Pair<String,
 
     public static interface Callbacks
     {
-        void onImagesReady(int count);
+        void onImagesReady(int count, int nextStartIndex);
+    }
+
+    public static final class GetImagesTaskResult
+    {
+        private final int mNextStartIndex;
+        private final List<Pair<String, String>> mUrls;
+
+        GetImagesTaskResult(int nextStartIndex, List<Pair<String, String>> urls)
+        {
+            this.mNextStartIndex = nextStartIndex;
+            this.mUrls = urls;
+        }
+
+        public int getNextStartIndex()
+        {
+            return mNextStartIndex;
+        }
+
+        public List<Pair<String, String>> getUrls()
+        {
+            return mUrls;
+        }
+
+        public String toString()
+        {
+            return "Next starting index: " + mNextStartIndex + " List: " + mUrls;
+        }
     }
 }

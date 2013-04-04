@@ -2,13 +2,11 @@ package com.androidsx.imagesearch.task;
 
 import android.app.Activity;
 
-import com.androidsx.imagesearch.view.ImageGridFragment;
-
 public class GetMemesTask extends GetImagesTask
 {
-    public GetMemesTask(Activity activity, ImageGridFragment imageGridFragment, int startingIndex, boolean fresh)
+    public GetMemesTask(Activity activity, int startingIndex, boolean fresh)
     {
-        super(activity, imageGridFragment, startingIndex, fresh);
+        super(activity, startingIndex, fresh);
     }
 
     @Override

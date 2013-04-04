@@ -62,19 +62,23 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 {
     private static final String TAG = "ImageGridFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
-    private static final String GRID_VIEW_IS_LOADING = "com.androidsx.imagesearch.ImageGridFragment.IS_LOADING";
+    private static final String STATE_GRID_VIEW_LOADING = "ImageGridFragment.STATE_GRID_VIEW_LOADING";
+    private static final String STATE_SEARCH_STRING = "ImageGridFragment.STATE_SEARCH_STRING";
+    private static final String STATE_START_INDEX = "ImageGridFragment.STATE_START_INDEX";
+    private static final String STATE_FAILED = "ImageGridFragment.STATE_FAILED";
 
     private SearchView searchView;
     private int mImageThumbSize;
     private int mImageThumbSpacing;
     private ImageFetcher mImageFetcher;
     private ImageAdapter mAdapter;
-    private String mSearchStr = "";
     private SuggestionsAdapter mSuggestionsAdapter;
     private GridView mGridView;
     private LinearLayout mFooter;
     private InfiniteGridView mInfiniteGridView;
+    private String mSearchStr = "";
     private int mSearchQueryIndex = 1;
+    private boolean mFailed = false;
 
     // /////////////////
     // Lifecycle methods
@@ -183,6 +187,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 if (mSearchStr != query && !mSearchStr.equals(query))
                 {
                     mSearchStr = query;
+                    mFailed = false;
                     searchForImages(true);
                 }
                 return true;
@@ -220,8 +225,12 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             @Override
             public void onNearTheEnd()
             {
-                Log.d(TAG, "Must fetch new images now.");
-                searchForImages(false);
+                Log.d(TAG, "Must fetch next images now.");
+                // TODO: Retry?
+                if (mFailed)
+                    Log.i(TAG, "Last try failed, not going to try again.");
+                else
+                    searchForImages(false);
             }
 
             @Override
@@ -239,8 +248,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         mInfiniteGridView.hideRefreshView();
         if (savedInstanceState != null)
         {
-            // TODO: Retrieve mSearchStr
-            boolean isLoading = savedInstanceState.getBoolean(GRID_VIEW_IS_LOADING);
+            mSearchStr = savedInstanceState.getString(STATE_SEARCH_STRING);
+            mSearchQueryIndex = savedInstanceState.getInt(STATE_START_INDEX);
+            mFailed = savedInstanceState.getBoolean(STATE_FAILED);
+            boolean isLoading = savedInstanceState.getBoolean(STATE_GRID_VIEW_LOADING);
             if (isLoading)
                 mInfiniteGridView.showRefreshView();
             else
@@ -264,7 +275,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             @Override
             public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount)
             {
-                Log.d(TAG, "No need to do anything on scroll.");
             }
         });
 
@@ -347,8 +357,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     {
         super.onSaveInstanceState(bundle);
         Log.i(TAG, "onSaveInstanceState()");
-        // TODO: Save mSearchStr
-        bundle.putBoolean(GRID_VIEW_IS_LOADING, mInfiniteGridView.isLoading().get());
+        bundle.putString(STATE_SEARCH_STRING, mSearchStr);
+        bundle.putInt(STATE_START_INDEX, mSearchQueryIndex);
+        bundle.putBoolean(STATE_GRID_VIEW_LOADING, mInfiniteGridView.isLoading().get());
+        bundle.putBoolean(STATE_FAILED, mFailed);
     }
 
     // /////////////////
@@ -386,21 +398,24 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         }
         mInfiniteGridView.showRefreshView();
         mAdapter.notifyDataSetChanged();
-        GetImagesTask task = new GetMemesTask(getActivity(), this, mSearchQueryIndex, fresh);
+        GetImagesTask task = new GetMemesTask(getActivity(), mSearchQueryIndex, fresh);
         task.execute(mSearchStr);
     }
 
     @Override
-    public void onImagesReady(int count)
+    public void onImagesReady(int count, int nextStartIndex)
     {
         if (count > 0)
         {
-            mSearchQueryIndex += count;
+            mSearchQueryIndex = nextStartIndex;
             mAdapter.notifyDataSetChanged();
-            mInfiniteGridView.hideRefreshView();
         }
         else
+        {
+            mFailed = true;
             Toast.makeText(getActivity(), R.string.query_failed, Toast.LENGTH_LONG).show();
+        }
+        mInfiniteGridView.hideRefreshView();
     }
 
     // /////////////

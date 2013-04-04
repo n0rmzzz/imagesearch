@@ -57,7 +57,7 @@ public class InfiniteGridView implements OnScrollListener
         {
             if (!mIsLoading.get() && mCallbacks.isNearEnd(firstVisibleItem, visibleItemCount, totalItemCount))
             {
-                showRefreshView();
+                // showRefreshView();
                 mCallbacks.onNearTheEnd();
             }
         }
