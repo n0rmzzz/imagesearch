@@ -47,6 +47,7 @@ import com.androidsx.imagesearch.R;
 import com.androidsx.imagesearch.provider.Images;
 import com.androidsx.imagesearch.provider.Keywords;
 import com.androidsx.imagesearch.task.GetImagesTask;
+import com.androidsx.imagesearch.task.GetImagesTask.GetImagesTaskError;
 import com.androidsx.imagesearch.task.GetMemesTask;
 import com.androidsx.imagesearch.util.ImageCache.ImageCacheParams;
 import com.androidsx.imagesearch.util.ImageFetcher;
@@ -182,7 +183,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                 InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
-                searchView.setIconified(true);
                 searchView.setIconified(true);
                 if (mSearchStr != query && !mSearchStr.equals(query))
                 {
@@ -388,7 +388,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 
     public void searchForImages(boolean fresh)
     {
-        assert (mSearchStr == null);
+        assert (mSearchStr != null);
         if (mSearchStr.length() < 1)
             return;
         if (fresh)
@@ -403,9 +403,9 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     }
 
     @Override
-    public void onImagesReady(int count, int nextStartIndex)
+    public void onImagesReady(boolean successful, GetImagesTaskError error, int nextStartIndex)
     {
-        if (count > 0)
+        if (successful)
         {
             mSearchQueryIndex = nextStartIndex;
             mAdapter.notifyDataSetChanged();
@@ -413,7 +413,8 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         else
         {
             mFailed = true;
-            Toast.makeText(getActivity(), R.string.query_failed, Toast.LENGTH_LONG).show();
+            if (error != GetImagesTaskError.MAX_REACHED)
+                Toast.makeText(getActivity(), R.string.query_failed, Toast.LENGTH_LONG).show();
         }
         mInfiniteGridView.hideRefreshView();
     }

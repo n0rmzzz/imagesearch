@@ -323,6 +323,8 @@ public class ImageCache {
                     }
                 } catch (final IOException e) {
                     Log.e(TAG, "getBitmapFromDiskCache - " + e);
+                } catch (final Exception e) {
+                    Log.e(TAG, "Unknown exception while decoding bitmap - " + e);
                 } finally {
                     try {
                         if (inputStream != null) {

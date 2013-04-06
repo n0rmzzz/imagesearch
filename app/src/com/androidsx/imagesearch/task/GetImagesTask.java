@@ -2,6 +2,7 @@ package com.androidsx.imagesearch.task;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.http.HttpEntity;
@@ -27,7 +28,8 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, GetImagesTaskResu
 
     private static final int sMinItesmPerRequest = 16;
     private static final int sMaxQueriesPerRequest = 4;
-
+    private static final int sDefaultCount = 10;
+    private static final int sMaxQueryLimit = 101;
     private final int mStartIndex;
     private final boolean mFresh;
     private final HttpClient client = new DefaultHttpClient();
@@ -42,7 +44,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, GetImagesTaskResu
     @Override
     protected GetImagesTaskResult doInBackground(String... params)
     {
-        Log.w(TAG, "Task execution params: " + params);
+        Log.w(TAG, "Task execution params: " + Arrays.asList(params));
         assert params.length >= 1;
         String keyword = params[0];
         String searchEngineId = "004032200943388316906:xcng10daspw";
@@ -56,9 +58,17 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, GetImagesTaskResu
             int nextStartIndex = mStartIndex;
             for (int queriesCount = 0; queriesCount < sMaxQueriesPerRequest && urls.size() < sMinItesmPerRequest; queriesCount++)
             {
+                int num = sDefaultCount;
+                if (nextStartIndex + num > sMaxQueryLimit)
+                    num = sMaxQueryLimit - nextStartIndex;
+                if (num < 1)
+                {
+                    Log.d(TAG, "Fetched maximum possible");
+                    break;
+                }
                 String encodedKeyword = URLEncoder.encode(createQueryKeyword(keyword), "utf-8");
                 String urlString = urlPrefix + "?key=" + apiKey + "&cx=" + searchEngineId + "&q=" + encodedKeyword
-                        + "&start=" + nextStartIndex;
+                        + "&start=" + nextStartIndex + "&num=" + num;
                 StringBuilder portURL = new StringBuilder(urlString);
                 HttpGet get = new HttpGet(portURL.toString());
                 HttpResponse r = client.execute(get);
@@ -107,12 +117,16 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, GetImagesTaskResu
                     break;
                 }
             }
-            return new GetImagesTaskResult(nextStartIndex, urls);
+            // Haven't found anything and reached the limit for the query.
+            if (urls.size() < 1)
+                return new GetImagesTaskResult(false, GetImagesTaskError.MAX_REACHED, nextStartIndex, urls);
+            return new GetImagesTaskResult(true, null, nextStartIndex, urls);
         }
         catch (Exception e)
         {
             Log.w(TAG, "Error occurred while getting images: " + e.getMessage(), e);
-            return new GetImagesTaskResult(mStartIndex, new ArrayList<Pair<String, String>>());
+            return new GetImagesTaskResult(false, GetImagesTaskError.OTHER_ERROR, mStartIndex,
+                    new ArrayList<Pair<String, String>>());
         }
     }
 
@@ -138,7 +152,7 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, GetImagesTaskResu
             Images.imageUrls.addAll(imageUrls);
         }
 
-        ((Callbacks) mActivity).onImagesReady(result.mUrls.size(), result.mNextStartIndex);
+        ((Callbacks) mActivity).onImagesReady(result.isSuccessful(), result.getError(), result.mNextStartIndex);
     }
 
     protected String createQueryKeyword(String keyword)
@@ -148,18 +162,38 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, GetImagesTaskResu
 
     public static interface Callbacks
     {
-        void onImagesReady(int count, int nextStartIndex);
+        void onImagesReady(boolean successful, GetImagesTaskError error, int nextStartIndex);
+    }
+
+    public static enum GetImagesTaskError
+    {
+        MAX_REACHED, OTHER_ERROR
     }
 
     public static final class GetImagesTaskResult
     {
+        private final boolean mSuccessful;
+        private final GetImagesTaskError mError;
         private final int mNextStartIndex;
         private final List<Pair<String, String>> mUrls;
 
-        GetImagesTaskResult(int nextStartIndex, List<Pair<String, String>> urls)
+        GetImagesTaskResult(boolean successful, GetImagesTaskError error, int nextStartIndex,
+                List<Pair<String, String>> urls)
         {
-            this.mNextStartIndex = nextStartIndex;
-            this.mUrls = urls;
+            mSuccessful = successful;
+            mError = error;
+            mNextStartIndex = nextStartIndex;
+            mUrls = urls;
+        }
+
+        public boolean isSuccessful()
+        {
+            return mSuccessful;
+        }
+
+        public GetImagesTaskError getError()
+        {
+            return mError;
         }
 
         public int getNextStartIndex()
@@ -174,7 +208,8 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, GetImagesTaskResu
 
         public String toString()
         {
-            return "Next starting index: " + mNextStartIndex + " List: " + mUrls;
+            return "Successful? " + mSuccessful + " Error: " + mError + " Next starting index: " + mNextStartIndex
+                    + " List: " + mUrls;
         }
     }
 }

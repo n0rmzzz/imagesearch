@@ -11,11 +11,11 @@ import roboguice.inject.ContentView;
 import roboguice.inject.InjectFragment;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 
 import com.androidsx.imagesearch.R;
 import com.androidsx.imagesearch.task.GetImagesTask;
 import com.androidsx.imagesearch.task.GetImagesTask.Callbacks;
+import com.androidsx.imagesearch.task.GetImagesTask.GetImagesTaskError;
 
 /**
  * Simple fragment activity to hold the main {@link ImageGridFragment}.
@@ -23,7 +23,6 @@ import com.androidsx.imagesearch.task.GetImagesTask.Callbacks;
 @ContentView(R.layout.image_grid_activity)
 public class ImageGridActivity extends BaseActivity implements GetImagesTask.Callbacks
 {
-    private static final String TAG = "ImageGridActivity";
     private static final String STATE_SEARCH_STRING = "state-search-string";
 
     @Nullable
@@ -57,10 +56,9 @@ public class ImageGridActivity extends BaseActivity implements GetImagesTask.Cal
     }
 
     @Override
-    public void onImagesReady(int count, int nextStartIndex)
+    public void onImagesReady(boolean successful, GetImagesTaskError error, int nextStartIndex)
     {
-        Log.d(TAG, "" + count + " images are ready.");
         if (mImageGridFragment != null)
-            ((Callbacks) mImageGridFragment).onImagesReady(count, nextStartIndex);
+            ((Callbacks) mImageGridFragment).onImagesReady(successful, error, nextStartIndex);
     }
 }
