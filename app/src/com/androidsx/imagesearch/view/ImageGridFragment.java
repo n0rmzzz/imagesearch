@@ -62,11 +62,11 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         GetImagesTask.Callbacks
 {
     private static final String TAG = "ImageGridFragment";
-    private static final String IMAGE_CACHE_DIR = "thumbs";
-    private static final String STATE_GRID_VIEW_LOADING = "ImageGridFragment.STATE_GRID_VIEW_LOADING";
-    private static final String STATE_SEARCH_STRING = "ImageGridFragment.STATE_SEARCH_STRING";
-    private static final String STATE_START_INDEX = "ImageGridFragment.STATE_START_INDEX";
-    private static final String STATE_FAILED = "ImageGridFragment.STATE_FAILED";
+    private static final String sImageCacheDir = "thumbs";
+    private static final String sStateGridViewLoading = "ImageGridFragment.STATE_GRID_VIEW_LOADING";
+    private static final String sStateSearchString = "ImageGridFragment.STATE_SEARCH_STRING";
+    private static final String sStateStartIndex = "ImageGridFragment.STATE_START_INDEX";
+    private static final String sStateFailed = "ImageGridFragment.STATE_FAILED";
 
     private SearchView searchView;
     private int mImageThumbSize;
@@ -92,16 +92,6 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     {
     }
 
-    public String getSearchStr()
-    {
-        return mSearchStr;
-    }
-
-    public void setSearchStr(String searchStr)
-    {
-        mSearchStr = searchStr;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState)
     {
@@ -109,7 +99,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
 
         SherlockFragmentActivity activity = getSherlockActivity();
 
-        ImageCacheParams cacheParams = new ImageCacheParams(activity, IMAGE_CACHE_DIR);
+        ImageCacheParams cacheParams = new ImageCacheParams(activity, sImageCacheDir);
         cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
 
         mImageThumbSize = getResources().getDimensionPixelSize(R.dimen.image_thumbnail_size);
@@ -247,10 +237,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         mInfiniteGridView.hideRefreshView();
         if (savedInstanceState != null)
         {
-            mSearchStr = savedInstanceState.getString(STATE_SEARCH_STRING);
-            mSearchQueryIndex = savedInstanceState.getInt(STATE_START_INDEX);
-            mFailed = savedInstanceState.getBoolean(STATE_FAILED);
-            boolean isLoading = savedInstanceState.getBoolean(STATE_GRID_VIEW_LOADING);
+            mSearchStr = savedInstanceState.getString(sStateSearchString);
+            mSearchQueryIndex = savedInstanceState.getInt(sStateStartIndex);
+            mFailed = savedInstanceState.getBoolean(sStateFailed);
+            boolean isLoading = savedInstanceState.getBoolean(sStateGridViewLoading);
             if (isLoading)
                 mInfiniteGridView.showRefreshView();
             else
@@ -356,10 +346,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
     {
         super.onSaveInstanceState(bundle);
         Log.i(TAG, "onSaveInstanceState()");
-        bundle.putString(STATE_SEARCH_STRING, mSearchStr);
-        bundle.putInt(STATE_START_INDEX, mSearchQueryIndex);
-        bundle.putBoolean(STATE_GRID_VIEW_LOADING, mInfiniteGridView.isLoading().get());
-        bundle.putBoolean(STATE_FAILED, mFailed);
+        bundle.putString(sStateSearchString, mSearchStr);
+        bundle.putInt(sStateStartIndex, mSearchQueryIndex);
+        bundle.putBoolean(sStateGridViewLoading, mInfiniteGridView.isLoading().get());
+        bundle.putBoolean(sStateFailed, mFailed);
     }
 
     // /////////////////

@@ -14,7 +14,7 @@ import com.androidsx.imagesearch.Platform;
 public class BaseActivity extends RoboSherlockFragmentActivity
 {
     @SuppressWarnings("unchecked")
-    private static final List<Class<? extends BaseActivity>> childrenActivities = Arrays.asList(
+    private static final List<Class<? extends BaseActivity>> sChildrenActivities = Arrays.asList(
             ImageGridActivity.class, ImageDetailActivity.class);
 
     @Override
@@ -52,7 +52,7 @@ public class BaseActivity extends RoboSherlockFragmentActivity
             if (Platform.hasHoneycomb())
             {
                 threadPolicyBuilder.penaltyFlashScreen();
-                for (Class<? extends BaseActivity> clazz : childrenActivities)
+                for (Class<? extends BaseActivity> clazz : sChildrenActivities)
                     vmPolicyBuilder.setClassInstanceLimit(clazz, 1);
             }
             StrictMode.setThreadPolicy(threadPolicyBuilder.build());

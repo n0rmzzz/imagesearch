@@ -23,8 +23,6 @@ import com.androidsx.imagesearch.task.GetImagesTask.GetImagesTaskError;
 @ContentView(R.layout.image_grid_activity)
 public class ImageGridActivity extends BaseActivity implements GetImagesTask.Callbacks
 {
-    private static final String STATE_SEARCH_STRING = "state-search-string";
-
     @Nullable
     @InjectFragment(R.id.image_grid)
     private Fragment mImageGridFragment;
@@ -37,22 +35,6 @@ public class ImageGridActivity extends BaseActivity implements GetImagesTask.Cal
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState)
-    {
-        super.onSaveInstanceState(outState);
-        if (mImageGridFragment != null)
-            outState.putString(STATE_SEARCH_STRING, ((ImageGridFragment) mImageGridFragment).getSearchStr());
-    }
-
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState)
-    {
-        super.onRestoreInstanceState(savedInstanceState);
-        if (mImageGridFragment != null)
-            ((ImageGridFragment) mImageGridFragment).setSearchStr(savedInstanceState.getString(STATE_SEARCH_STRING));
     }
 
     @Override

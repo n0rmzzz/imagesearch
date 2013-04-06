@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.androidsx.imagesearch.R;
-import com.androidsx.imagesearch.util.ImageFetcher;
 import com.androidsx.imagesearch.util.ImageWorker;
 
 /**
@@ -23,7 +22,7 @@ import com.androidsx.imagesearch.util.ImageWorker;
  */
 public class ImageDetailFragment extends Fragment implements OnClickListener
 {
-    private static final String IMAGE_DATA_EXTRA = "extra_image_data";
+    private static final String sImageDataExtra = "extra_image_data";
 
     private static Callbacks sDummyCallbacks = new Callbacks()
     {
@@ -39,7 +38,6 @@ public class ImageDetailFragment extends Fragment implements OnClickListener
 
     private String mImageUrl;
     private ImageView mImageView;
-    private ImageFetcher mImageFetcher;
     private Callbacks mCallbacks = sDummyCallbacks;
 
     // /////////////////
@@ -58,7 +56,7 @@ public class ImageDetailFragment extends Fragment implements OnClickListener
         final ImageDetailFragment f = new ImageDetailFragment();
 
         final Bundle args = new Bundle();
-        args.putString(IMAGE_DATA_EXTRA, imageUrl);
+        args.putString(sImageDataExtra, imageUrl);
         f.setArguments(args);
 
         return f;
@@ -75,7 +73,7 @@ public class ImageDetailFragment extends Fragment implements OnClickListener
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        mImageUrl = getArguments() != null ? getArguments().getString(IMAGE_DATA_EXTRA) : null;
+        mImageUrl = getArguments() != null ? getArguments().getString(sImageDataExtra) : null;
     }
 
     @Override

@@ -34,7 +34,7 @@ import com.androidsx.imagesearch.util.ImageFetcher;
 public class ImageDetailActivity extends BaseActivity implements ImageDetailFragment.Callbacks
 {
     private static final String TAG = "ImageDetailActivity";
-    private static final String IMAGE_CACHE_DIR = "images";
+    private static final String sImageCacheDir = "images";
     public static final String EXTRA_IMAGE = "extra_image";
 
     private ActionBar mActionBar;
@@ -139,7 +139,7 @@ public class ImageDetailActivity extends BaseActivity implements ImageDetailFrag
         final int width = displayMetrics.widthPixels;
         final int longest = Math.max(height, width) / 2;
 
-        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
+        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, sImageCacheDir);
         cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
 
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
