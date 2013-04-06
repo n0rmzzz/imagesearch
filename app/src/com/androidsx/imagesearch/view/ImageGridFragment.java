@@ -154,8 +154,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             {
                 if (!hasFocus)
                     return;
-                String query = searchView.getQuery().toString();
-                searchView.setQuery(query, false);
+                searchView.setQuery(mSearchStr, false);
             }
         });
         searchView.setOnSuggestionListener(new OnSuggestionListener()
@@ -184,10 +183,10 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
                         Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(searchView.getWindowToken(), 0);
                 searchView.setIconified(true);
+                searchView.setIconified(true);
                 if (mSearchStr != query && !mSearchStr.equals(query))
                 {
                     mSearchStr = query;
-                    mFailed = false;
                     searchForImages(true);
                 }
                 return true;
@@ -226,7 +225,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
             public void onNearTheEnd()
             {
                 Log.d(TAG, "Must fetch next images now.");
-                // TODO: Retry?
+                // TODO: Check the time and retry maybe.
                 if (mFailed)
                     Log.i(TAG, "Last try failed, not going to try again.");
                 else
@@ -391,10 +390,12 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         assert (mSearchStr != null);
         if (mSearchStr.length() < 1)
             return;
+        mFailed = false;
         if (fresh)
         {
             Images.imageThumbUrls = new ArrayList<String>();
             Images.imageUrls = new ArrayList<String>();
+            mSearchQueryIndex = 1;
         }
         mInfiniteGridView.showRefreshView();
         mAdapter.notifyDataSetChanged();

@@ -49,7 +49,11 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, GetImagesTaskResu
         String keyword = params[0];
         String searchEngineId = "004032200943388316906:xcng10daspw";
         // TODO: Fix the Android app key. Using a browser key for tests only.
-        String apiKey = "AIzaSyDtqxkys3TWrfw4kFwbvfEZUVzUGwQLeeY";
+        // Main browser key for test
+        // String apiKey = "AIzaSyDtqxkys3TWrfw4kFwbvfEZUVzUGwQLeeY";
+        // Alternate browser key for test
+        String apiKey = "AIzaSyBgdKcXCqaDBpix7RjgquL_znT-rHzjchY";
+        // Android app key
         // String apiKey = "AIzaSyB9nLGzeOiMnpGqsBYiCD5cWr_OCRM_JNc";
         String urlPrefix = "https://www.googleapis.com/customsearch/v1";
         try
