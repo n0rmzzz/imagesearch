@@ -48,7 +48,6 @@ import com.androidsx.imagesearch.provider.Images;
 import com.androidsx.imagesearch.provider.Keywords;
 import com.androidsx.imagesearch.task.GetImagesTask;
 import com.androidsx.imagesearch.task.GetImagesTask.GetImagesTaskError;
-import com.androidsx.imagesearch.task.GetMemesTask;
 import com.androidsx.imagesearch.util.ImageCache.ImageCacheParams;
 import com.androidsx.imagesearch.util.ImageFetcher;
 
@@ -389,7 +388,7 @@ public class ImageGridFragment extends SherlockFragment implements AdapterView.O
         }
         mInfiniteGridView.showRefreshView();
         mAdapter.notifyDataSetChanged();
-        GetImagesTask task = new GetMemesTask(getActivity(), mSearchQueryIndex, fresh);
+        GetImagesTask task = new GetImagesTask(getActivity(), mSearchQueryIndex, fresh);
         task.execute(mSearchStr);
     }
 

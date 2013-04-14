@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Meme Search</string>
-    <string name="app_description">Search for memes/rage faces</string>
+    <string name="app_name">Image Search</string>
+    <string name="app_description">Search for images using Google search API</string>
     <string name="clear_cache_menu">Clear Caches</string>
     <string name="clear_cache_complete_toast">Caches have been cleared</string>
     <string name="imageview_description">Image Thumbnail</string>
     <string name="no_network_connection_toast">No network connection found</string>
-    <string name="search_hint">Search Memes</string>
+    <string name="search_hint">Search Images</string>
     <string name="image_grid_loading">Loading...</string>
     <string name="query_failed">Query failed! Please try again, or contact us if the problem persists.</string>
     
