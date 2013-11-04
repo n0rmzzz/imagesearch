@@ -47,14 +47,13 @@ public class GetImagesTask extends BaseAsyncTask<String, Void, GetImagesTaskResu
         Log.w(TAG, "Task execution params: " + Arrays.asList(params));
         assert params.length >= 1;
         String keyword = params[0];
-        String searchEngineId = "004032200943388316906:xcng10daspw";
-        // TODO: Fix the Android app key. Using a browser key for tests only.
-        // Main browser key for test
-        // String apiKey = "AIzaSyDtqxkys3TWrfw4kFwbvfEZUVzUGwQLeeY";
-        // Alternate browser key for test
-        String apiKey = "AIzaSyBgdKcXCqaDBpix7RjgquL_znT-rHzjchY";
-        // Android app key
-        // String apiKey = "AIzaSyB9nLGzeOiMnpGqsBYiCD5cWr_OCRM_JNc";
+        // TODO: Put your own search engine ID here.
+        // It's now using my sample search engine: https://www.google.com:443/cse/publicurl?cx=003769731715892921205:et2gxq80fg8
+        // https://www.google.com/cse/
+        String searchEngineId = "003769731715892921205:et2gxq80fg8";
+        // TODO: Put your own API key here.
+        // https://code.google.com/apis/console
+        String apiKey = "AIzaSyBBi4r3GkidS8VPwVHh18pUkneMiZWiTx0";
         String urlPrefix = "https://www.googleapis.com/customsearch/v1";
         try
         {
